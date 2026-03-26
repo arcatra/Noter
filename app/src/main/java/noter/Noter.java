@@ -1,11 +1,29 @@
 package noter;
 
+// Imports ----------
+import java.io.BufferedReader;
+import java.io.FileReader;
+
+// import java.io.BufferedWriter;
+
+// -----------------
+
 public class Noter {
-    public String getGreeting() {
-        return "Hello World!";
+    public void displayAbout() {
+        try (BufferedReader bfr = new BufferedReader(new FileReader("src/main/resources/about.txt"))) {
+            String line;
+
+            while ((line = bfr.readLine()) != null) {
+                System.out.println(line);
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error occured!: " + e);
+        }
     }
 
     public static void main(String[] args) {
-        System.out.println(new Noter().getGreeting());
+        Noter obj = new Noter();
+        obj.displayAbout();
     }
 }
