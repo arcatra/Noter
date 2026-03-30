@@ -1,4 +1,4 @@
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ NOTER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~ About ~~~~~~~~~~~~~~
 What is Noter:
     - Noter is a CLI based tool for daily tasks managemnt.
     - Noter can be used as a TO-DO app, or as a note taking.
@@ -10,4 +10,4 @@ Who is it for:
 Why Noter:
     - For now let's say, you don't have to leave terminal
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~ ----- ~~~~~~~~~~~~~~

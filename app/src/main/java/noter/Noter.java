@@ -4,8 +4,10 @@ package noter;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 // import java.io.BufferedWriter;
@@ -13,17 +15,12 @@ import java.util.Scanner;
 // -----------------
 
 public class Noter {
-    public void displayAbout() {
-        try (BufferedReader bfr = new BufferedReader(new FileReader("./src/main/resources/about.txt"))) {
-            String line;
 
-            while ((line = bfr.readLine()) != null) {
-                System.out.println(line);
-            }
+    public String root;
+    public String[] currentTask = new String[2];
 
-        } catch (Exception e) {
-            System.out.println("Error occured!: " + e);
-        }
+    public Noter() {
+        this.root = "src/main";
     }
 
     public void addTask(String task) {
@@ -31,32 +28,79 @@ public class Noter {
 
     }
 
-    public void destructArgs(String args[]) {
+    private boolean isPathExists(String filePath) {
+
+        Path path = Paths.get(filePath);
+
+        return (Files.exists(path));
+
+    }
+
+    public void readAFile(String filePath) {
+
+        if (this.isPathExists(filePath)) {
+            try (BufferedReader bfr = new BufferedReader(new FileReader(filePath))) {
+
+                String line;
+                while ((line = bfr.readLine()) != null) {
+                    System.out.println(line);
+                }
+
+            } catch (Exception e) {
+                System.out.println("Error occured while processing this path: " + filePath);
+
+            }
+
+        } else {
+            System.out.printf("Error: %s Provided path doesn't exists\n", filePath);
+
+        }
+
+    }
+
+    public void getAbout() {
+        this.readAFile(this.root + "/resources/about.txt");
+
+    }
+
+    private void getHelp() {
+        this.readAFile(this.root + "/resources/help.txt");
+
+    }
+
+    private void handleArgs(String args[]) {
         int len = args.length;
 
         for (int index = 0; index < len; index++) {
-            // System.out.println("Current: " + args[index]);
-            String val = args[index];
+            // System.out.printf("Current val at index %d: %s\n", index, args[index]);
+            String arg = args[index];
 
-            if (val.startsWith("-")) {
-                val = val.toLowerCase();
-            }
+            switch (arg) {
+                case "-help":
+                    this.getHelp();
+                    break;
 
-            switch (val) {
                 case "-about":
-                    this.displayAbout();
+                    this.getAbout();
+                    break;
+
+                case "--task":
+                    if (++index >= len) {
+                        System.out.println("Error: no task name");
+                    }
+
+                    arg = args[index];
+                    System.out.println("task: " + arg);
 
                     break;
 
-                case "-task":
-                    if (index + 1 < len) {
-                        String taskName = args[index + 1];
-                        System.out.println("Adding task: " + taskName);
-
-                    } else {
-                        System.out.println("Error: Couldn't find the task");
-
+                case "--desc":
+                    if (++index >= len) {
+                        System.out.println("Error: no task name");
                     }
+
+                    arg = args[index];
+                    System.out.println("desc: " + arg);
 
                     break;
 
@@ -71,11 +115,16 @@ public class Noter {
 
         Noter obj = new Noter();
 
+        // for (int i = 0; i < args.length; i++) {
+        // System.out.printf("%d = %s\n", i, args[i]);
+        // }
+        // System.out.println("Current root: " + root);
+
         if (args.length >= 1) {
-            obj.destructArgs(args);
+            obj.handleArgs(args);
 
         } else {
-            System.out.println("MSG: Could'nt find any args");
+            System.out.println("MESSAGE: Could'nt find any args");
         }
 
     }
