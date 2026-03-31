@@ -1,26 +1,31 @@
-#!/bin/bash
+#!/bin/sh
 
 echo "Use 12(compile, run), 21(run, compile), for more flexibility"
-printf "Choose a number:\n1. compile,\n2. run,\n3. exit\n(default: 2)\n[1/2/12] ? : "
+printf "Choose a number:\n1. compile,\n2. run,\n3. exit\n(default: 2)\n[1/2] ? : "
 read -r choice
 
-
-# printf "\nArgs to be passed:\n"
-# for arg in "$@"; do
-#     echo "$arg"
-#
-# done
+root=./app/src/main/java/
+bin=./app/bin/main/
 
 compile () {
-    echo "Compiling only 1 DIR"
-    javac -d ./app/bin/main/  ./app/src/main/java/noter/*.java
+    subDirCount=0
+
+    for dir in "$root"*/; do
+        if [ -d "$dir" ]; then
+            subDirCount=$((subDirCount + 1)) 
+        fi
+
+    done
+
+    echo "Compiling $subDirCount DIR(s)"
+    find "$root" -name "*.java" | xargs javac -d "$bin" || exit 1
     printf "Done\n"
 }
 
 run() {
-    echo ""
-    java -cp ./app/bin/main/ noter.Noter "$@"
-    echo ""
+    echo
+    java -cp "$bin" noter.Noter "$@" || exit 1
+    echo
 }
 
 case "$choice" in
@@ -40,7 +45,7 @@ case "$choice" in
     ;;
     3) 
         echo "Halting the process"
-        echo ""
+        echo 
 
         exit
     ;;

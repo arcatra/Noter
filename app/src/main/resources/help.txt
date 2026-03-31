@@ -1,13 +1,24 @@
 ~~~~~~~~~~~~~~ help ~~~~~~~~~~~~~~
 commands:
 
--task : To add a task with task name and DESC
--help : to get help about a spesific command or help
--about : More info about Noter
+-new : Add new task to the task pool.
+    --task : To add a task with task name and DESC
+    --desc : To add desc to the given task
+
+-remove : Remove a task from the task pool.
+-update : Update a task with NEW NAME or DESCRIPTION.
+-help : to get help about a spesific command or help.
+-about : More info about Noter.
 
 Usage:
 
--task <taskname:desc>
+-new --task <task name: String> --desc <description: String>
+    --task <taskname: String>
+    --desc <description: String>
+
+-remove <task id: int>
+-update <task id: int> --newName <task name: String> --desc <description: String>
+
 -help <command> or -help 
 -about
 
