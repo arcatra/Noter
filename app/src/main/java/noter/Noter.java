@@ -4,7 +4,6 @@ package noter;
 import java.util.Scanner;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.InputMismatchException;
 
 import utils.*;
 
@@ -13,7 +12,7 @@ import utils.*;
 public class Noter {
 
     public String root;
-    public Map<Integer, Task> taskManager = new HashMap<>();
+    public Map<Integer, Task> taskPool = new HashMap<>();
     public int currId;
 
     Helpers helper;
@@ -22,6 +21,7 @@ public class Noter {
         this.root = "app/src/main";
         this.helper = new Helpers();
         this.currId = 0;
+
     }
 
     public void getAbout() {
@@ -37,7 +37,7 @@ public class Noter {
     public void addTask(String task, String desc) {
 
         Task createNewTask = new Task(currId, task, desc);
-        this.taskManager.put(currId, createNewTask);
+        this.taskPool.put(currId, createNewTask);
 
         System.out.println("Added a task to the task pool");
 
@@ -46,12 +46,12 @@ public class Noter {
     }
 
     public void displayTasks() {
-        if (this.taskManager.size() < 1) {
+        if (this.taskPool.size() < 1) {
             System.out.println("No tasks yet, use -help more info");
         }
 
         System.out.println("\nDisplaying Tasks\n");
-        for (Map.Entry<Integer, Task> item : this.taskManager.entrySet()) {
+        for (Map.Entry<Integer, Task> item : this.taskPool.entrySet()) {
             Task tObj = item.getValue();
             System.out.printf("Task ID: %s,\tTask Name: %s,\tTask Description: %s\n",
                     item.getKey(),
@@ -79,8 +79,8 @@ public class Noter {
             return index + 1;
         }
 
-        if (this.taskManager.containsKey(id)) {
-            Task removed = this.taskManager.remove(id);
+        if (this.taskPool.containsKey(id)) {
+            Task removed = this.taskPool.remove(id);
 
             System.out.printf("Removed task: %s, with id: %s\n", removed.getTaskName(), id);
             return index + 1;
