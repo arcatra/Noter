@@ -10,9 +10,11 @@ bin=./app/bin/main/
 compile () {
     subDirCount=0
 
+    echo "Listing java DIR(s)"
     for dir in "$root"*/; do
         if [ -d "$dir" ]; then
-            subDirCount=$((subDirCount + 1)) 
+            subDirCount=$((subDirCount + 1))
+            echo "$dir"
         fi
 
     done

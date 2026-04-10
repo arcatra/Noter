@@ -13,6 +13,7 @@ plugins {
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
+}dependencies {
 }
 
 dependencies {
@@ -21,6 +22,9 @@ dependencies {
 
     // This dependency is used by the application.
     implementation(libs.guava)
+
+    // This dependency is used for cli commands management.
+    // implementation("info.picocli:picocli:4.7.7")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
