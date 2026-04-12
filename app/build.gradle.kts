@@ -7,14 +7,15 @@
 
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
+    java
     application
 }
 
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
-}dependencies {
-}
+
+} 
 
 dependencies {
     // Use JUnit test framework.
@@ -22,6 +23,9 @@ dependencies {
 
     // This dependency is used by the application.
     implementation(libs.guava)
+
+    // JDBC support for SQLite
+    implementation("org.xerial:sqlite-jdbc:3.45.1.0")
 
     // This dependency is used for cli commands management.
     // implementation("info.picocli:picocli:4.7.7")
@@ -37,4 +41,8 @@ java {
 application {
     // Define the main class for the application.
     mainClass = "noter.Noter"
+}
+
+tasks.run {
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
 }

@@ -14,7 +14,15 @@ public class ArgsParser {
     ExHandler stdHandle;
 
     ArrayList<String> validArgs = new ArrayList<>(
-            List.of("-new", "-display", "-remove", "-about", "-help"));
+            List.of(
+                    "-new", "-n",
+                    "-display", "-d",
+                    "-remove", "-r",
+                    "-done", "-do",
+                    "-doneall", "-doneAll", "-da",
+                    "-update", "-u",
+                    "-about",
+                    "-help"));
 
     public ArgsParser(String[] args) {
         this.args = args;
@@ -24,7 +32,7 @@ public class ArgsParser {
         this.checkArgs(args);
     }
 
-    private int createNewTask(String[] args, int cIndex, int len) {
+    private int handleNewTask(String[] args, int cIndex, int len) {
         String task;
         String desc;
 
@@ -71,7 +79,56 @@ public class ArgsParser {
             }
         }
         return cIndex;
+    }
 
+    private int handleUpdate(String args[], int cIndex) {
+        cIndex++;
+
+        if (cIndex + 2 > args.length) {
+            System.out.println("Missing values for -update");
+            return cIndex;
+
+        }
+
+        int id;
+        String tName = null;
+        String tDesc = null;
+
+        try {
+            id = Integer.parseInt(args[cIndex]);
+        } catch (Exception e) {
+            stdHandle.panic(String.format("Not a valid id: %s", args[cIndex]));
+            return cIndex++;
+        }
+
+        cIndex++;
+        tName = args[cIndex];
+        cIndex++;
+        tDesc = args[cIndex];
+
+        this.noter.updateTask(id, tName, tDesc);
+
+        return cIndex;
+    }
+
+    private int handleRemove(String args[], int cIndex, String command) {
+        cIndex++;
+        if (cIndex >= args.length) {
+            stdHandle.panic("No valid value(ID) for command " + command);
+            return cIndex;
+
+        }
+
+        try {
+            int id = Integer.parseInt(args[cIndex]);
+            this.noter.removeTask(id);
+
+        } catch (Exception e) {
+            stdHandle.panic(String.format("%s: Not a valid task ID\n", args[cIndex]));
+
+        }
+
+        return cIndex++;
     }
 
     private void handleOptions(String args[], int len) {
@@ -88,21 +145,41 @@ public class ArgsParser {
                 continue;
             }
 
+            // System.out.printf("TEST: arg: %s, index: %d\n", arg1, index);
+
             switch (arg1) {
                 case "-new":
-                    updIndex = this.createNewTask(args, index, len);
+                    updIndex = this.handleNewTask(args, index, len);
                     index = updIndex;
 
                     break;
 
                 case "-remove":
-                    updIndex = this.noter.removeTask(args, index);
+                    updIndex = this.handleRemove(args, index, "-remove");
                     index = updIndex;
 
                     break;
 
+                case "-done":
+                    updIndex = this.handleRemove(args, index, "-done");
+                    index = updIndex;
+                    break;
+
+                case "-clear":
+                    this.noter.clearTaskPool();
+                    break;
+
+                case "-doneall":
+                    this.noter.clearTaskPool();
+                    break;
+
                 case "-display":
                     this.noter.displayTasks();
+                    break;
+
+                case "-update":
+                    updIndex = this.handleUpdate(args, index);
+                    index = updIndex;
                     break;
 
                 case "-help":

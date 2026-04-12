@@ -6,21 +6,22 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.nio.file.Files;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileReader;
-import java.io.FileWriter;
 //---------------------------
 
 public class Helpers {
 
     ExHandler stdHandle;
+    DataBaseSupport db;
 
     public Helpers() {
         this.stdHandle = new ExHandler();
+        this.db = new DataBaseSupport();
     }
 
     private boolean isPathExists(String filePath) {
         Path path = Paths.get(filePath);
+        System.out.println("Current working dir: " + System.getProperty("user.dir"));
         return (Files.exists(path));
 
     }
@@ -47,23 +48,12 @@ public class Helpers {
     }
 
     public void writeFile(String filePath, Collection<Task> content) {
-        if (this.isPathExists(filePath)) {
+        if (!this.isPathExists(filePath)) {
             stdHandle.panic("File path is not valid: " + filePath);
         }
 
-        try (BufferedWriter bfr = new BufferedWriter(new FileWriter(filePath))) {
-            for (Task task : content) {
-                if (!task.toString().equals("")) {
-                    bfr.write(task.toString());
-                    bfr.newLine();
-
-                }
-            }
-
-            stdHandle.message("Successfully encrypted added the given task");
-
-        } catch (Exception e) {
-            stdHandle.panic(e + "");
+        for (Task newTask : content) {
+            this.db.insert(newTask);
         }
     }
 }

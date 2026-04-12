@@ -18,13 +18,33 @@ public class Noter {
 
     Helpers helper;
     ArgsParser argsParser;
-    ExHandler stdHadle;
+    ExHandler stdHandle;
+    DataBaseSupport db;
 
     public Noter() {
-        this.resourcesPath = "app/src/main/resources/";
-        this.currId = 0;
+        this.resourcesPath = "src/main/resources/";
         this.helper = new Helpers();
-        this.stdHadle = new ExHandler();
+        this.stdHandle = new ExHandler();
+        this.db = new DataBaseSupport();
+
+        this.init();
+
+    }
+
+    private void init() {
+
+        for (Task task : db.get()) {
+            this.taskPool.put(task.getTaskId(), task);
+            this.currId = task.getTaskId();
+
+        }
+
+        this.currId++;
+
+    }
+
+    private boolean isTaskPoolEmpty() {
+        return (this.taskPool.size() <= 0);
 
     }
 
@@ -38,66 +58,84 @@ public class Noter {
 
     }
 
-    public void addTask(String task, String desc) {
+    public void addTask(String tName, String tDesc) {
 
-        Task newTask = new Task(currId, task, desc);
+        Task newTask = new Task(currId, tName, tDesc);
         this.taskPool.put(currId, newTask);
 
-        this.helper.writeFile(this.resourcesPath + "taskPool.txt", this.taskPool.values());
+        db.insert(newTask);
+        stdHandle.message("Successfully added a task to database\n");
 
-        this.stdHadle.message("New task added");
+        this.displayTasks();
 
         currId++;
 
     }
 
-    public void displayTasks() {
-        if (this.taskPool.size() < 1) {
-            this.stdHadle.message("No tasks yet, use -help more info");
-
+    public void updateTask(int id, String nName, String nDesc) {
+        if (this.isTaskPoolEmpty()) {
+            System.out.println("No tasks yet, create a new one with -new '<name:desc>'");
             return;
         }
 
-        System.out.println("\nTasks:\n");
-        for (Map.Entry<Integer, Task> item : this.taskPool.entrySet()) {
-            Task task = item.getValue();
-            System.out.printf("ID: %s,\tName: %s,\tDescription: %s\n",
-                    item.getKey(),
-                    task.getTaskName(),
-                    task.getTaskDesc());
+        Task newTask = new Task(id, nName, nDesc);
+
+        this.taskPool.put(id, newTask);
+        db.update(id, nName, nDesc);
+
+        stdHandle.message("Done!, updated the given task\n");
+        this.displayTasks();
+    }
+
+    public void displayTasks() {
+
+        if (this.isTaskPoolEmpty()) {
+            System.out.println("No tasks found\n");
+            return;
+
         }
 
+        System.out.println("\nTasks:\n");
+
+        for (Task task : this.taskPool.values()) {
+            System.out.printf(
+                    "ID: %d, \t Name: %s, \t Description: %s\n",
+                    task.getTaskId(),
+                    task.getTaskName(),
+                    task.getTaskDesc());
+
+        }
         System.out.println("");
 
     }
 
-    public int removeTask(String[] args, int index) {
-        if (index + 1 >= args.length) {
-            this.stdHadle.panic("No 'ID' provided to remove task");
-            return index + 1;
-
-        }
-
-        int id;
-
-        try {
-
-            id = Integer.parseInt(args[index + 1]);
-
-        } catch (Exception e) {
-            this.stdHadle.panic("invalid task ID, Should be an integer");
-            return index + 1;
-        }
-
-        if (this.taskPool.containsKey(id)) {
+    public void removeTask(int id) {
+        // System.out.printf("removable id: %d\n", id);
+        if (this.taskPool.containsKey(id) && !this.isTaskPoolEmpty()) {
             Task removed = this.taskPool.remove(id);
-            String msg = String.format("Removed task: %s, with id: %s\n", removed.getTaskName(), id);
-            this.stdHadle.message(msg);
-            return index + 1;
+            db.remove(id);
+
+            this.stdHandle.message(String.format("Removed task: %s, with id: %s\n", removed.getTaskName(), id));
+            this.displayTasks();
+
+            return;
+
         }
 
-        System.out.printf("No task with id: %d found in tasks pool\n", id);
-        return index + 1;
+        System.out.printf("No task with id: %d found in task pool\n", id);
+
+    }
+
+    public void clearTaskPool() {
+        if (this.isTaskPoolEmpty()) {
+            System.out.println("No tasks found\n");
+            return;
+        }
+
+        db.clear();
+        this.taskPool.clear();
+
+        stdHandle.message("Done!, Cleared all the tasks\n");
     }
 
     public static void main(String[] args) {
