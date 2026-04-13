@@ -2,12 +2,11 @@
 package noter;
 
 // Imports ----------
-import java.util.Scanner;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 
 import utils.*;
-
 // -----------------
 
 public class Noter {
@@ -31,16 +30,25 @@ public class Noter {
 
     }
 
-    private void init() {
+    public static void main(String[] args) {
+        Noter obj = new Noter();
+        obj.argsParser = new ArgsParser(args);
 
-        for (Task task : db.get()) {
+    }
+
+    private void init() {
+        List<Task> dbTasks = db.get();
+        if (dbTasks == null) {
+            System.out.println("No tasks yet");
+            return;
+        }
+
+        for (Task task : dbTasks) {
             this.taskPool.put(task.getTaskId(), task);
             this.currId = task.getTaskId();
-
         }
 
         this.currId++;
-
     }
 
     private boolean isTaskPoolEmpty() {
@@ -65,21 +73,20 @@ public class Noter {
 
         db.insert(newTask);
         stdHandle.message("Successfully added a task to database\n");
-
         this.displayTasks();
 
         currId++;
-
     }
 
     public void updateTask(int id, String nName, String nDesc) {
+
         if (this.isTaskPoolEmpty()) {
             System.out.println("No tasks yet, create a new one with -new '<name:desc>'");
             return;
+
         }
 
         Task newTask = new Task(id, nName, nDesc);
-
         this.taskPool.put(id, newTask);
         db.update(newTask);
 
@@ -92,11 +99,9 @@ public class Noter {
         if (this.isTaskPoolEmpty()) {
             System.out.println("No tasks found\n");
             return;
-
         }
 
         System.out.println("\nTasks:\n");
-
         for (Task task : this.taskPool.values()) {
             System.out.printf(
                     "ID: %d, \t Name: %s, \t Description: %s\n",
@@ -106,7 +111,6 @@ public class Noter {
 
         }
         System.out.println("");
-
     }
 
     public void removeTask(int id) {
@@ -118,11 +122,9 @@ public class Noter {
             this.displayTasks();
 
             return;
-
         }
 
-        System.out.printf("No task with id: %d found in task pool\n", id);
-
+        System.out.printf("No task with id %d found in task pool\n", id);
     }
 
     public void clearTaskPool() {
@@ -137,12 +139,4 @@ public class Noter {
         stdHandle.message("Done!, Cleared all the tasks\n");
     }
 
-    public static void main(String[] args) {
-        Scanner userIn = new Scanner(System.in);
-        userIn.close();
-
-        Noter obj = new Noter();
-        obj.argsParser = new ArgsParser(args);
-
-    }
 }

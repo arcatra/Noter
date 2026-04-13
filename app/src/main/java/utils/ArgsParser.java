@@ -12,6 +12,7 @@ public class ArgsParser {
     String[] args;
     Noter noter;
     ExHandler stdHandle;
+    int len;
 
     ArrayList<String> validArgs = new ArrayList<>(
             List.of(
@@ -28,25 +29,26 @@ public class ArgsParser {
         this.args = args;
         this.noter = new Noter();
         this.stdHandle = new ExHandler();
+        this.len = this.args.length;
 
-        this.checkArgs(args);
+        this.checkArgs();
     }
 
-    private int handleNewTask(String[] args, int cIndex, int len) {
+    private int handleNewTask(int cIndex) {
         cIndex++;
-        if (cIndex + 2 >= len) {
+        if (cIndex + 2 >= this.len) {
             this.stdHandle.panic("Missing values for -new, or invalid values");
             this.stdHandle.message("follow -> -new <name:description>");
             return cIndex;
         }
 
-        if (!args[cIndex].contains(":")) {
+        if (!this.args[cIndex].contains(":")) {
             this.stdHandle.panic("Not a valid value for -new");
             this.stdHandle.message("follow -> -new <name:description>");
             return cIndex;
         }
 
-        String[] vessal = args[cIndex].split(":");
+        String[] vessal = this.args[cIndex].split(":");
         String tName = vessal[0];
         String tDesc = vessal[1];
 
@@ -55,9 +57,9 @@ public class ArgsParser {
         return cIndex;
     }
 
-    private int handleUpdate(String args[], int cIndex) {
+    private int handleUpdate(int cIndex) {
         cIndex++;
-        if (cIndex + 2 >= args.length) {
+        if (cIndex + 2 >= this.len) {
             this.stdHandle.panic("Missing values for -update, or invalid values");
             this.stdHandle.message("Follow -> -update <id> <new task name> <new description>");
             return cIndex;
@@ -66,25 +68,27 @@ public class ArgsParser {
 
         int id;
         try {
-            id = Integer.parseInt(args[cIndex]);
+            id = Integer.parseInt(this.args[cIndex]);
+
         } catch (Exception e) {
-            stdHandle.panic(String.format("Not a valid id: %s\n", args[cIndex]));
+            stdHandle.panic(String.format("Not a valid id: %s\n", this.args[cIndex]));
             return cIndex;
+
         }
 
         cIndex++;
-        String tName = args[cIndex];
+        String tName = this.args[cIndex];
         cIndex++;
-        String tDesc = args[cIndex];
+        String tDesc = this.args[cIndex];
 
         this.noter.updateTask(id, tName, tDesc);
 
         return cIndex;
     }
 
-    private int handleRemove(String args[], int cIndex, String command) {
+    private int handleRemove(int cIndex, String command) {
         cIndex++;
-        if (cIndex >= args.length) {
+        if (cIndex >= this.len) {
             stdHandle.panic("invalid values");
             this.stdHandle.message(String.format("follow -> %s <Task ID>\n", command));
             return cIndex;
@@ -92,29 +96,27 @@ public class ArgsParser {
         }
 
         try {
-            int id = Integer.parseInt(args[cIndex]);
+            int id = Integer.parseInt(this.args[cIndex]);
             this.noter.removeTask(id);
 
         } catch (Exception e) {
-            stdHandle.panic(String.format("%s: is not a valid task ID\n", args[cIndex]));
+            stdHandle.panic(String.format("%s: is not a valid task ID\n", this.args[cIndex]));
 
         }
 
         return cIndex++;
     }
 
-    private void handleOptions(String args[], int len) {
+    private void handleOptions() {
         int index = 0;
         while (index < len) {
 
-            String arg1 = args[index];
+            String arg1 = this.args[index];
             int updIndex;
 
             if (arg1.startsWith("-") && !this.validArgs.contains(arg1)) {
-                this.stdHandle.panic(
-                        String.format("Cannot find the %s %s, use help for more info\n",
-                                (arg1.startsWith("-") ? "option" : "command"),
-                                arg1));
+                this.stdHandle.panic(String.format("Cannot find the command %s, use help for more info\n",
+                        arg1));
                 index++;
                 continue;
             }
@@ -123,19 +125,17 @@ public class ArgsParser {
 
             switch (arg1) {
                 case "-new":
-                    updIndex = this.handleNewTask(args, index, len);
+                    updIndex = this.handleNewTask(index);
                     index = updIndex;
-
                     break;
 
                 case "-remove":
-                    updIndex = this.handleRemove(args, index, "-remove");
+                    updIndex = this.handleRemove(index, "-remove");
                     index = updIndex;
-
                     break;
 
                 case "-done":
-                    updIndex = this.handleRemove(args, index, "-done");
+                    updIndex = this.handleRemove(index, "-done");
                     index = updIndex;
                     break;
 
@@ -152,7 +152,7 @@ public class ArgsParser {
                     break;
 
                 case "-update":
-                    updIndex = this.handleUpdate(args, index);
+                    updIndex = this.handleUpdate(index);
                     index = updIndex;
                     break;
 
@@ -171,15 +171,14 @@ public class ArgsParser {
         }
     }
 
-    private void checkArgs(String args[]) {
-        int len = args.length;
-        if (!(args.length > 0)) {
+    private void checkArgs() {
+        if (!(this.len > 0)) {
             System.out.println("MESSAGE: Could'nt find any args");
             return;
 
         }
 
-        this.handleOptions(args, len);
+        this.handleOptions();
 
     }
 }

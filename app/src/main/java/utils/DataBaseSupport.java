@@ -29,14 +29,14 @@ public class DataBaseSupport {
             excQuery.execute();
 
         } catch (SQLException e) {
-            stdHandle.panic("Serious: SQLException occured while establishing connection\n");
+            stdHandle.panic("Serious -> SQLException occured while establishing connection\n");
         }
 
     }
 
     public void insert(Task task) {
         if (task == null) {
-            stdHandle.panic("Serious: Task Object expected but got 'null'");
+            stdHandle.panic("Serious -> Task Object expected but got 'null'");
             return;
         }
 
@@ -53,10 +53,10 @@ public class DataBaseSupport {
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic("Serious: SQLException while est conn and inserting data\n");
+            stdHandle.panic("Serious -> SQLException while connecting and inserting data\n");
 
         } catch (Exception e) {
-            stdHandle.panic("Unknown exception: " + e);
+            stdHandle.panic(e.getMessage());
 
         }
 
@@ -75,7 +75,7 @@ public class DataBaseSupport {
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic("Serious: SQLException while est conn and updating data\n");
+            stdHandle.panic("Serious -> SQLException while connecting and updating data\n");
 
         }
     }
@@ -89,7 +89,7 @@ public class DataBaseSupport {
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic("Serious: SQLException while est conn and clearing table\n");
+            stdHandle.panic("Serious -> SQLException while connecting and clearing table\n");
 
         }
 
@@ -105,7 +105,7 @@ public class DataBaseSupport {
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic("Serious: SQLException while establishing connection and removing data\n");
+            stdHandle.panic("Serious -> SQLException while connecting and removing data\n");
 
         } catch (Exception e) {
             stdHandle.panic("Unknown exception: " + e);
@@ -116,7 +116,6 @@ public class DataBaseSupport {
 
     public List<Task> get() {
         List<Task> tasks = new ArrayList<>();
-
         String query = "SELECT * FROM taskpool";
 
         try (Connection db = DriverManager.getConnection(URL);
@@ -132,7 +131,7 @@ public class DataBaseSupport {
             return tasks;
 
         } catch (SQLException e) {
-            stdHandle.panic("Serious: SQLException while establishing connection\n");
+            stdHandle.panic("Serious -> SQLException while establishing connection\n");
 
         } catch (Exception e) {
             stdHandle.panic("Unknown exception: " + e);
