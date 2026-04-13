@@ -8,6 +8,9 @@ build/
 .kotlin/
 .vscode/
 
+# Ignore data folder, that includes dadabase files
+data/
+
 app/.project
 app/.classpath
 app/.settings/
