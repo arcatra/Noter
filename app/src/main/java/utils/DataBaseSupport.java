@@ -62,15 +62,15 @@ public class DataBaseSupport {
 
     }
 
-    public void update(int id, String newName, String newDesc) {
+    public void update(Task Utask) {
         String insert = "UPDATE taskpool SET name = ?, description = ? WHERE id = ?";
 
         try (Connection db = DriverManager.getConnection(URL);
                 PreparedStatement excQuery = db.prepareStatement(insert)) {
 
-            excQuery.setString(1, newName);
-            excQuery.setString(2, newDesc);
-            excQuery.setInt(3, id);
+            excQuery.setString(1, Utask.getTaskName());
+            excQuery.setString(2, Utask.getTaskDesc());
+            excQuery.setInt(3, Utask.getTaskId());
 
             excQuery.executeUpdate();
 

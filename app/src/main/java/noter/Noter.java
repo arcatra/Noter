@@ -81,9 +81,9 @@ public class Noter {
         Task newTask = new Task(id, nName, nDesc);
 
         this.taskPool.put(id, newTask);
-        db.update(id, nName, nDesc);
+        db.update(newTask);
 
-        stdHandle.message("Done!, updated the given task\n");
+        stdHandle.message(String.format("Done!, updated the given task: %d\n", id));
         this.displayTasks();
     }
 
@@ -110,12 +110,11 @@ public class Noter {
     }
 
     public void removeTask(int id) {
-        // System.out.printf("removable id: %d\n", id);
         if (this.taskPool.containsKey(id) && !this.isTaskPoolEmpty()) {
             Task removed = this.taskPool.remove(id);
             db.remove(id);
 
-            this.stdHandle.message(String.format("Removed task: %s, with id: %s\n", removed.getTaskName(), id));
+            this.stdHandle.message(String.format("Removed task '%s', with id: %s\n", removed.getTaskName(), id));
             this.displayTasks();
 
             return;

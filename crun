@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash 
 
 echo "Use 12(compile, run), 21(run, compile), for more flexibility"
 printf "Choose a number:\n1. compile,\n2. run,\n3. exit\n(default: 2)\n[1/2] ? : "
