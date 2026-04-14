@@ -1,5 +1,6 @@
 # Noter
-A note taking, and to-do CLI app
+A daily tasks management tool, for productivity and clarity.
+Keeps your tasks local.
 
 ## Commands
 - new : To create a new task.
