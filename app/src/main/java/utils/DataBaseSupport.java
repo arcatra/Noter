@@ -20,6 +20,15 @@ public class DataBaseSupport {
     }
 
     private void init() {
+        try {
+            // Force load the class
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            System.err.println("The JVM cannot see the SQLite JAR!");
+            System.err.println("Check this path: " + System.getProperty("java.class.path"));
+            return;
+        }
+
         String query = "CREATE TABLE IF NOT EXISTS taskpool ( " +
                 "id INTEGER PRIMARY KEY, name TEXT NOT NULL, description TEXT)";
 
@@ -29,7 +38,7 @@ public class DataBaseSupport {
             excQuery.execute();
 
         } catch (SQLException e) {
-            stdHandle.panic("Serious -> SQLException occured while establishing connection\n");
+            stdHandle.panic(String.format("Serious in init -> %s\n", e.getMessage()));
         }
 
     }
@@ -53,7 +62,7 @@ public class DataBaseSupport {
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic("Serious -> SQLException while connecting and inserting data\n");
+            stdHandle.panic(String.format("Serious in insert -> %s\n", e.getMessage()));
 
         } catch (Exception e) {
             stdHandle.panic(e.getMessage());
@@ -75,7 +84,7 @@ public class DataBaseSupport {
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic("Serious -> SQLException while connecting and updating data\n");
+            stdHandle.panic(String.format("Serious in update -> %s\n", e.getMessage()));
 
         }
     }
@@ -89,7 +98,7 @@ public class DataBaseSupport {
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic("Serious -> SQLException while connecting and clearing table\n");
+            stdHandle.panic(String.format("Serious in clear -> %s\n", e.getMessage()));
 
         }
 
@@ -105,7 +114,7 @@ public class DataBaseSupport {
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic("Serious -> SQLException while connecting and removing data\n");
+            stdHandle.panic(String.format("Serious in remove -> %s\n", e.getMessage()));
 
         } catch (Exception e) {
             stdHandle.panic("Unknown exception: " + e);
@@ -131,7 +140,7 @@ public class DataBaseSupport {
             return tasks;
 
         } catch (SQLException e) {
-            stdHandle.panic("Serious -> SQLException while establishing connection\n");
+            stdHandle.panic(String.format("Serious in get -> %s\n", e.getMessage()));
 
         } catch (Exception e) {
             stdHandle.panic("Unknown exception: " + e);

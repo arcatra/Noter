@@ -42,8 +42,7 @@ public class ArgsParser {
             return cIndex;
         }
 
-        // System.out.println("Task: " + args[cIndex]);
-
+        // System.out.printf("args[%d]: %s\n", cIndex, this.args[cIndex]);
         if (!this.args[cIndex].contains(":")) {
             this.stdHandle.panic("Not a valid value for -new");
             this.stdHandle.message("follow -> -new <name:description>");

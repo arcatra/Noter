@@ -3,7 +3,6 @@ package utils;
 // Imports -------------------
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.nio.file.Files;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -12,14 +11,12 @@ import java.io.FileReader;
 public class Helpers {
 
     ExHandler stdHandle;
-    DataBaseSupport db;
 
     public Helpers() {
         this.stdHandle = new ExHandler();
-        this.db = new DataBaseSupport();
     }
 
-    private boolean isPathExists(String filePath) {
+    public boolean isPathExists(String filePath) {
         Path path = Paths.get(filePath);
         System.out.println("Current working dir: " + System.getProperty("user.dir"));
         return (Files.exists(path));
@@ -47,13 +44,4 @@ public class Helpers {
 
     }
 
-    public void writeFile(String filePath, Collection<Task> content) {
-        if (!this.isPathExists(filePath)) {
-            stdHandle.panic("File path is not valid: " + filePath);
-        }
-
-        for (Task newTask : content) {
-            this.db.insert(newTask);
-        }
-    }
 }

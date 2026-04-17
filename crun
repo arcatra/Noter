@@ -1,11 +1,25 @@
 #!/bin/bash 
 
+
+# NOTE: Use this bash script with caution, as this method doesn't track and manage dependencies and changes.
+
+# This bash script is written by me(arcatra) and is intended for basic java projects only.
+# As my project grew, i quickly realised that this approch is not sufficient, so switched to gradle.
+
+# How to run this file:
+#   NOTE: pdate the folder structure for "root" and "bin" as needed.
+#   Navigate to the parent dir of this script, and make it executable: chmod +x ./crun
+#   run it: ./crun <any args>
+#   NOTE: This is a one time setup, and you can pass args if needed "crun" will pass them directly to java.
+
+
 echo "Use 12(compile, run), 21(run, compile), for more flexibility"
-printf "Choose a number:\n1. compile,\n2. run,\n3. exit\n(default: 2)\n[1/2] ? : "
+printf "1. compile,\n2. run,\n3. exit\n(default: 2)\n[1/2/3]\nChoice? : "
 read -r choice
 
 root=./app/src/main/java/
 bin=./app/bin/main/
+lib=./app/lib/*
 
 compile () {
     subDirCount=0
@@ -13,20 +27,22 @@ compile () {
     echo "Listing java DIR(s)"
     for dir in "$root"*/; do
         if [ -d "$dir" ]; then
-            subDirCount=$((subDirCount + 1))
             echo "$dir"
         fi
 
     done
 
-    echo "Compiling $subDirCount java DIR(s)"
-    find "$root" -name "*.java" | xargs javac -d "$bin" || exit 1
+    echo "Compiling sources.."
+    find "$root" -name "*.java" -print0 | xargs -0 javac -cp "$lib" -d "$bin" || exit 1
     printf "Done\n"
 }
 
 run() {
     echo
-    java -cp "$bin" noter.Noter "$@" || exit 1
+    # java -cp "./app/bin/main:./app/lib/*" noter.Noter "$@" || exit 1
+    echo "Using classpath: ${bin}, $lib"
+
+    java -classpath "${bin}:${lib}" noter.Noter "$@" || exit 1
     echo
 }
 

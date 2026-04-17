@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# NOTE: This is a gradlw only bash script
+
+./gradlew build -q
+./gradlew run -q --args="${*@Q}"
+
