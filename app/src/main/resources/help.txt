@@ -2,6 +2,7 @@
 commands:
 
 -new : Add new task to the task pool.
+-display : Prints the task pool.
 -remove : Remove a task from the task pool.
 -update : Update a task with NEW NAME or DESCRIPTION.
 -done : Mark a task as DONE, this will remove the task from tasks pool.
@@ -13,6 +14,7 @@ commands:
 Usage:
 
 -new "<Name>:<Description>"
+-display
 -remove <task ID: int>
 -update <task ID: int> "<new name> "<new description>"
 -done <task ID: int>

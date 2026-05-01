@@ -66,9 +66,9 @@ public class Noter {
 
     }
 
-    public void addTask(String tName, String tDesc) {
+    public void addTask(String tName, String tDesc, String deadLine) {
 
-        Task newTask = new Task(currId, tName, tDesc);
+        Task newTask = new Task(currId, tName, tDesc, deadLine);
         this.taskPool.put(currId, newTask);
 
         db.insert(newTask);
@@ -86,12 +86,19 @@ public class Noter {
 
         }
 
-        Task newTask = new Task(id, nName, nDesc);
-        this.taskPool.put(id, newTask);
-        db.update(newTask);
+        if (this.taskPool.containsKey(id)) {
+            String deadLine = this.taskPool.get(id).getDeadLine();
+            Task newTask = new Task(id, nName, nDesc, deadLine);
+            this.taskPool.put(id, newTask);
+            db.update(newTask);
 
-        stdHandle.message(String.format("Done!, updated the given task: %d\n", id));
-        this.displayTasks();
+            stdHandle.message(String.format("Done!, updated the given task: %d\n", id));
+            this.displayTasks();
+
+        } else {
+            stdHandle.message("No task found with given ID");
+        }
+
     }
 
     public void displayTasks() {
@@ -104,11 +111,12 @@ public class Noter {
         System.out.println("\nTasks:\n");
         for (Task task : this.taskPool.values()) {
             System.out.printf(
-                    "ID: %d, \t Name: %s, \t Description: %s\n",
+                    "ID: %d\tCreatedOn: %s\tName: %s\tDescription: %s\tDue: %s\n",
                     task.getTaskId(),
+                    task.getTaskDateTime(),
                     task.getTaskName(),
-                    task.getTaskDesc());
-
+                    task.getTaskDesc(),
+                    task.getDeadLine());
         }
         System.out.println("");
     }
@@ -124,7 +132,7 @@ public class Noter {
             return;
         }
 
-        System.out.printf("No task with id %d found in task pool\n", id);
+        System.out.printf("No task found with id: %d\n", id);
     }
 
     public void clearTaskPool() {

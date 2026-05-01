@@ -3,7 +3,7 @@ package utils;
 public class ExHandler {
 
     public void panic(String err) {
-        System.out.printf("Error: %s\n", err);
+        System.err.printf("Error: %s\n", err);
 
     }
 

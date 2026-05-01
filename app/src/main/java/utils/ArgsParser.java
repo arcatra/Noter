@@ -18,6 +18,7 @@ public class ArgsParser {
             List.of(
                     "-new", "-n",
                     "-display", "-d",
+                    "-by", "-b",
                     "-remove", "-r",
                     "-done", "-do",
                     "-doneall", "-doneAll", "-da",
@@ -53,7 +54,18 @@ public class ArgsParser {
         String tName = vessal[0];
         String tDesc = vessal[1];
 
-        this.noter.addTask(tName, tDesc);
+        cIndex++;
+        String deadLine = "None";
+        if (this.len >= 4 && this.args[cIndex].equals("-by")) {
+            cIndex++;
+
+            deadLine = this.args[cIndex];
+
+        } else {
+            stdHandle.panic("No due date provided\n");
+        }
+
+        this.noter.addTask(tName, tDesc, deadLine);
 
         return cIndex;
     }
@@ -71,10 +83,13 @@ public class ArgsParser {
         try {
             id = Integer.parseInt(this.args[cIndex]);
 
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             stdHandle.panic(String.format("Not a valid id: %s\n", this.args[cIndex]));
             return cIndex;
 
+        } catch (Exception e) {
+            stdHandle.panic("Unknown exception occured");
+            return cIndex;
         }
 
         cIndex++;
@@ -100,8 +115,10 @@ public class ArgsParser {
             int id = Integer.parseInt(this.args[cIndex]);
             this.noter.removeTask(id);
 
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             stdHandle.panic(String.format("%s: is not a valid task ID\n", this.args[cIndex]));
+
+        } catch (Exception e) {
 
         }
 

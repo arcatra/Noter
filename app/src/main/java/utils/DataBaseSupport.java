@@ -20,17 +20,8 @@ public class DataBaseSupport {
     }
 
     private void init() {
-        try {
-            // Force load the class
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException e) {
-            System.err.println("The JVM cannot see the SQLite JAR!");
-            System.err.println("Check this path: " + System.getProperty("java.class.path"));
-            return;
-        }
-
         String query = "CREATE TABLE IF NOT EXISTS taskpool ( " +
-                "id INTEGER PRIMARY KEY, name TEXT NOT NULL, description TEXT)";
+                "id INTEGER PRIMARY KEY, name TEXT NOT NULL, description TEXT, duedate TEXT, created TEXT)";
 
         try (Connection dbConn = DriverManager.getConnection(URL);
                 PreparedStatement excQuery = dbConn.prepareStatement(query)) {
@@ -49,7 +40,7 @@ public class DataBaseSupport {
             return;
         }
 
-        String insert = "INSERT INTO taskpool (id, name, description) VALUES (?, ?, ?) " +
+        String insert = "INSERT INTO taskpool (id, name, description, duedate, created) VALUES (?, ?, ?, ?, ?) " +
                 "ON CONFLICT(id) DO UPDATE SET name = excluded.name, description = excluded.description";
 
         try (Connection db = DriverManager.getConnection(URL);
@@ -58,6 +49,8 @@ public class DataBaseSupport {
             excQuery.setInt(1, task.getTaskId());
             excQuery.setString(2, task.getTaskName());
             excQuery.setString(3, task.getTaskDesc());
+            excQuery.setString(4, task.getDeadLine());
+            excQuery.setString(5, task.getTaskDateTime());
 
             excQuery.executeUpdate();
 
@@ -133,7 +126,8 @@ public class DataBaseSupport {
             ResultSet res = excQuery.executeQuery();
 
             while (res.next()) {
-                Task newTask = new Task(res.getInt("id"), res.getString("name"), res.getString("description"));
+                Task newTask = new Task(res.getInt("id"), res.getString("name"), res.getString("description"),
+                        res.getString("duedate"));
                 tasks.add(newTask);
             }
 
