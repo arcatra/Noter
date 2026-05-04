@@ -127,6 +127,17 @@ public class Noter {
 
     }
 
+    public void updateEveryTaskStatus(int pastStatus, int newStatus) {
+        if ((pastStatus >= 0 && pastStatus <= 1) && (newStatus >= 0 && newStatus <= 1)) {
+            db.updateAllStatus(pastStatus, newStatus);
+            return;
+
+        }
+
+        stdHandle.panic(String.format("Not a valid status %d and %d, only 0 or 1", pastStatus, newStatus));
+
+    }
+
     public void displayAll() {
         this.displayEveryTask(true);
     }
@@ -157,7 +168,7 @@ public class Noter {
     public void removeTask(int id) {
         if (this.taskPool.containsKey(id) && !this.isTaskPoolEmpty()) {
             this.taskPool.get(id).setStatus(1);
-            db.update(id);
+            db.update(id, 1);
 
             this.stdHandle.message("Done!\n");
             this.displayEveryTask(false);
@@ -165,7 +176,7 @@ public class Noter {
             return;
         }
 
-        System.out.printf("No task found with id: %d\n", id);
+        System.out.printf("No task found with id: %d or TaskPool is empty\n", id);
     }
 
     public void clearTaskPool() {

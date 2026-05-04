@@ -21,7 +21,6 @@ public class ArgsParser {
                     "-displayall", "-dpa",
                     "-due", "-db",
                     "-remap", "-rap",
-                    "-sync", "-sc",
                     "-remove", "-r",
                     "-done", "-do",
                     "-doneall", "-doneAll", "-da",
@@ -175,7 +174,7 @@ public class ArgsParser {
                     break;
 
                 case "-doneall":
-                    this.noter.clearTaskPool();
+                    this.noter.updateEveryTaskStatus(0, 1);
                     break;
 
                 case "-display":
