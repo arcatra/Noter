@@ -194,7 +194,15 @@ public class ArgsParser {
                     this.noter.getHelp();
                     break;
 
+                case "--help":
+                    this.noter.getHelp();
+                    break;
+
                 case "-about":
+                    this.noter.getAbout();
+                    break;
+
+                case "--about":
                     this.noter.getAbout();
                     break;
 

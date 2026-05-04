@@ -1,28 +1,47 @@
 help
 
 commands:
-    -new            : Add new task to the TaskPool, with status code 0-Pending.
+    -new            : Add new task to the TaskPool, with a default status code of 0: Pending.
     -display        : Prints the pending(0) tasks from TaskPool to stdout.
-    -displayall     : Prints entire tasks(completed[1], pending[0]) tasks from TaskPool to stdout.
-    -due            : Add a due-date while adding task, if not provided with -new this would become "None".
-    -remap          : Re-Maps the entire TaskPool IDs from 1,..N, in an incremental way.
-    -remove         : Remove a task from the TaskPool, archives the task(follow -done).
+    -displayall     : Prints entire TaskPool(completed[1], pending[0]) to stdout.
+    -due            : Add a due-date while adding a task, if not provided with -new command this would default to "None".
+    -remap          : Re-Maps(Re-Index) the entire TaskPool IDs from 1,..N, in an incremental way.
+    -remove         : Remove a task from the TaskPool, And also from the DBT: TaskPool.
     -update         : Update a task - NAME / DESCRIPTION / DUE, with ID.
-    -done           : Mark a task as completed, and archive the task.
-    -doneall        : Mark all of the tasks as completed, there will be no pending tasks in TaskPool after this. Unless you add one.
+    -done           : Mark a task status as "Completed", and archive the task(This won't remove the task from TaskPool).
+    -doneall        : Mark all of the tasks status as "Completed", there would be no pending tasks in TaskPool after this. 
+                      Unless you add one.
 
     -help/--help    : Know more about valid commands, and usages.
     -about/--about  : More info about Noter.
 
 Usage:
-    -new "<Name>:<Description>" [-due "date/day/today/tomorrow"(Optional)]
-    -display
-    -displayall
-    -remap
-    -remove <task ID: int>
-    -update <task ID: int> "<new name>" "<new description>" "<due-date(Optional)>"
-    -done <task ID: int>
-    -doneall
+    -new "<Name>:<Description>" [-due "date/day/today/tomorrow"(Optional)]<Enter>
+    -display<Enter>
+    -displayall<Enter>
+    -remap<Enter>
+    -remove <task ID: int><Enter>
+    -update <task ID: int> "<new name("." to skip)>" "<new description("." to skip)>" "<due-date(Optional)>"<Enter>
+    -done <task ID: int><Enter>
+    -doneall<Enter>
 
-    -help/--help
-    -about/--about
+    -help/--help<Enter>
+    -about/--about<Enter>
+
+Examples:
+    -new "A new task name:(colun) is importent here, and this colun seperates the description from task name" -due "Tomorrow"<Enter>
+        Note: the -due command is completely optional, but it is reccommended. 
+
+    -remove 4<Enter>
+
+    -update 4 "." "." "25-05-2026"<Enter>
+        Note: here due-date is completely optional, you can skip this if you want, and also you can either have taskName,
+              taskDescription or even both.
+
+    -done 3<Enter>
+
+    Note:
+        1. You can have multiple command in the same line, like so: -new "task:description" -display -done 2 -remap ...  .
+        2. Observe a "single space" between every valid command, that is how the syntax for this tool works.
+        3. Every valid command will be executed in a left to right order, say above exmple, 1. -new, 2. -display, 3. -done ....
+        
