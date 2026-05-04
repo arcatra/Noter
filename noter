@@ -2,7 +2,7 @@
 
 # NOTE: This is a gradelw only bash script
 
-buil() {
+build() {
     ./gradlew build -q
 
 }
@@ -19,10 +19,11 @@ run() {
 
 if [[ $# -eq 0 ]]; then
    run
+   echo "No args"
    exit 0
 
 fi
 
 build
-runWithArgs "${*@Q}" 
+runWithArgs "$@" 
 

@@ -1,26 +1,26 @@
 help
 
 commands:
-    -new            : Add new task to the task pool, with status code 0-Pending.
-    -display        : Prints the pending(0) tasks from task pool to stdout.
-    -displayall     : Prints entire tasks(completed[1], pending[0]) tasks from task pool to stdout.
-    -due            : Add a due-date while adding task, if not provided with -new this would be "None".
-    -remap          : ReMaps the task's IDs from 1,..N, in an incremental way.
-    -remove         : Remove a task from the task pool, archives the task(follow -done).
-    -update         : Update a task with NEW NAME or DESCRIPTION or DUE.
-    -done           : Mark a task as completed(1), and archive the task.
-    -doneall        : Mark all of the tasks as completed, there will be no pending tasks after this unless you add one.
+    -new            : Add new task to the TaskPool, with status code 0-Pending.
+    -display        : Prints the pending(0) tasks from TaskPool to stdout.
+    -displayall     : Prints entire tasks(completed[1], pending[0]) tasks from TaskPool to stdout.
+    -due            : Add a due-date while adding task, if not provided with -new this would become "None".
+    -remap          : Re-Maps the entire TaskPool IDs from 1,..N, in an incremental way.
+    -remove         : Remove a task from the TaskPool, archives the task(follow -done).
+    -update         : Update a task - NAME / DESCRIPTION / DUE, with ID.
+    -done           : Mark a task as completed, and archive the task.
+    -doneall        : Mark all of the tasks as completed, there will be no pending tasks in TaskPool after this. Unless you add one.
 
-    --help/-help    : Know more about valid commands, and usages.
+    -help/--help    : Know more about valid commands, and usages.
     -about/--about  : More info about Noter.
 
 Usage:
-    -new "<Name>:<Description>" or -new "<Name>:<Description>" [-due "date/day/today/tomorrow"]
+    -new "<Name>:<Description>" [-due "date/day/today/tomorrow"(Optional)]
     -display
     -displayall
     -remap
     -remove <task ID: int>
-    -update <task ID: int> "<new name>" "<new description>"
+    -update <task ID: int> "<new name>" "<new description>" "<due-date(Optional)>"
     -done <task ID: int>
     -doneall
 

@@ -77,7 +77,8 @@ public class ArgsParser {
         cIndex++;
         if (cIndex + 2 >= this.len) {
             this.stdHandle.panic("Missing values for -update, or invalid values");
-            this.stdHandle.message("Follow -> -update <id> <new task name> <new description>");
+            this.stdHandle.message(
+                    "Follow -> -update <id> <new task name(. for existing)> <new description(. for existing)> <DueDate(Optional)>");
             return cIndex;
 
         }

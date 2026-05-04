@@ -27,7 +27,6 @@ public class Noter {
         this.resourcesPath = "src/main/resources/";
         this.helper = new Helpers();
         this.stdHandle = new ExHandler();
-        System.out.println("Creating db object");
         this.db = new DataBaseSupport();
 
         this.init();
