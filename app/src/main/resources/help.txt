@@ -1,26 +1,28 @@
-~~~~~~~~~~~~~~ help ~~~~~~~~~~~~~~
+help
+
 commands:
+    -new            : Add new task to the task pool, with status code 0-Pending.
+    -display        : Prints the pending(0) tasks from task pool to stdout.
+    -displayall     : Prints entire tasks(completed[1], pending[0]) tasks from task pool to stdout.
+    -due            : Add a due-date while adding task, if not provided with -new this would be "None".
+    -remap          : ReMaps the task's IDs from 1,..N, in an incremental way.
+    -remove         : Remove a task from the task pool, archives the task(follow -done).
+    -update         : Update a task with NEW NAME or DESCRIPTION or DUE.
+    -done           : Mark a task as completed(1), and archive the task.
+    -doneall        : Mark all of the tasks as completed, there will be no pending tasks after this unless you add one.
 
--new : Add new task to the task pool.
--display : Prints the task pool.
--remove : Remove a task from the task pool.
--update : Update a task with NEW NAME or DESCRIPTION.
--done : Mark a task as DONE, this will remove the task from tasks pool.
--doneall : Mark all of the tasks as DONE, this will remove all the tasks from tasks pool.
-
--help : to get help about a spesific command or help.
--about : More info about Noter.
+    --help/-help    : Know more about valid commands, and usages.
+    -about/--about  : More info about Noter.
 
 Usage:
+    -new "<Name>:<Description>" or -new "<Name>:<Description>" [-due "date/day/today/tomorrow"]
+    -display
+    -displayall
+    -remap
+    -remove <task ID: int>
+    -update <task ID: int> "<new name>" "<new description>"
+    -done <task ID: int>
+    -doneall
 
--new "<Name>:<Description>"
--display
--remove <task ID: int>
--update <task ID: int> "<new name> "<new description>"
--done <task ID: int>
--doneall
-
--help
--about
-
-~~~~~~~~~~~~~~ ---- ~~~~~~~~~~~~~~
+    -help/--help
+    -about/--about

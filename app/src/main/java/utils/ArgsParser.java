@@ -18,17 +18,20 @@ public class ArgsParser {
             List.of(
                     "-new", "-n",
                     "-display", "-d",
-                    "-by", "-b",
+                    "-displayall", "-dpa",
+                    "-due", "-db",
+                    "-remap", "-rap",
+                    "-sync", "-sc",
                     "-remove", "-r",
                     "-done", "-do",
                     "-doneall", "-doneAll", "-da",
                     "-update", "-u",
-                    "-about",
-                    "-help"));
+                    "-about", "--about",
+                    "-help", "--help"));
 
-    public ArgsParser(String[] args) {
+    public ArgsParser(String[] args, Noter noter) {
         this.args = args;
-        this.noter = new Noter();
+        this.noter = noter;
         this.stdHandle = new ExHandler();
         this.len = this.args.length;
 
@@ -56,7 +59,7 @@ public class ArgsParser {
 
         cIndex++;
         String deadLine = "None";
-        if (this.len >= 4 && this.args[cIndex].equals("-by")) {
+        if (this.len >= 4 && this.args[cIndex].equals("-due")) {
             cIndex++;
 
             deadLine = this.args[cIndex];
@@ -96,8 +99,14 @@ public class ArgsParser {
         String tName = this.args[cIndex];
         cIndex++;
         String tDesc = this.args[cIndex];
+        cIndex++;
+        String due = ".";
 
-        this.noter.updateTask(id, tName, tDesc);
+        if (!(cIndex >= this.len)) {
+            due = this.args[cIndex];
+        }
+
+        this.noter.updateTask(id, tName, tDesc, due);
 
         return cIndex;
     }
@@ -146,6 +155,9 @@ public class ArgsParser {
                     updIndex = this.handleNewTask(index);
                     index = updIndex;
                     break;
+                case "-remap":
+                    this.noter.remap();
+                    break;
 
                 case "-remove":
                     updIndex = this.handleRemove(index, "-remove");
@@ -166,7 +178,11 @@ public class ArgsParser {
                     break;
 
                 case "-display":
-                    this.noter.displayTasks();
+                    this.noter.displayEveryTask(false);
+                    break;
+
+                case "-displayall":
+                    this.noter.displayAll();
                     break;
 
                 case "-update":

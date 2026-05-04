@@ -3,6 +3,7 @@ package noter;
 
 // Imports ----------
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.List;
 
@@ -15,6 +16,8 @@ public class Noter {
     public Map<Integer, Task> taskPool = new HashMap<>();
     public int currId;
 
+    public static Noter obj;
+
     Helpers helper;
     ArgsParser argsParser;
     ExHandler stdHandle;
@@ -24,6 +27,7 @@ public class Noter {
         this.resourcesPath = "src/main/resources/";
         this.helper = new Helpers();
         this.stdHandle = new ExHandler();
+        System.out.println("Creating db object");
         this.db = new DataBaseSupport();
 
         this.init();
@@ -31,8 +35,8 @@ public class Noter {
     }
 
     public static void main(String[] args) {
-        Noter obj = new Noter();
-        obj.argsParser = new ArgsParser(args);
+        Noter.obj = new Noter();
+        obj.argsParser = new ArgsParser(args, Noter.obj);
 
     }
 
@@ -66,19 +70,38 @@ public class Noter {
 
     }
 
-    public void addTask(String tName, String tDesc, String deadLine) {
+    public void addTask(String tName, String tDesc, String due) {
 
-        Task newTask = new Task(currId, tName, tDesc, deadLine);
+        Task newTask = new Task(currId, tName, tDesc, due);
         this.taskPool.put(currId, newTask);
 
         db.insert(newTask);
         stdHandle.message("Successfully added a task to database\n");
-        this.displayTasks();
+        this.displayEveryTask(false);
 
         currId++;
     }
 
-    public void updateTask(int id, String nName, String nDesc) {
+    public void remap() {
+        if (this.isTaskPoolEmpty()) {
+            stdHandle.message("No tasks yet to sync tasks");
+            return;
+
+        }
+
+        int id = 1;
+        db.clear();
+        for (Entry<Integer, Task> tEntry : this.taskPool.entrySet()) {
+            tEntry.getValue().setTaskId(id);
+            id++;
+            db.insert(tEntry.getValue());
+        }
+
+        this.displayEveryTask(false);
+
+    }
+
+    public void updateTask(int id, String nName, String nDesc, String due) {
 
         if (this.isTaskPoolEmpty()) {
             System.out.println("No tasks yet, create a new one with -new '<name:desc>'");
@@ -87,13 +110,17 @@ public class Noter {
         }
 
         if (this.taskPool.containsKey(id)) {
-            String deadLine = this.taskPool.get(id).getDeadLine();
-            Task newTask = new Task(id, nName, nDesc, deadLine);
+            due = due.equals(".") ? this.taskPool.get(id).getdue() : due;
+            nName = nName.length() <= 1 ? this.taskPool.get(id).getTaskName() : nName;
+            nDesc = nDesc.length() <= 1 ? this.taskPool.get(id).getTaskDesc() : nDesc;
+
+            Task newTask = new Task(id, nName, nDesc, due);
+
             this.taskPool.put(id, newTask);
             db.update(newTask);
 
             stdHandle.message(String.format("Done!, updated the given task: %d\n", id));
-            this.displayTasks();
+            this.displayEveryTask(false);
 
         } else {
             stdHandle.message("No task found with given ID");
@@ -101,7 +128,11 @@ public class Noter {
 
     }
 
-    public void displayTasks() {
+    public void displayAll() {
+        this.displayEveryTask(true);
+    }
+
+    public void displayEveryTask(boolean all) {
 
         if (this.isTaskPoolEmpty()) {
             System.out.println("No tasks found\n");
@@ -110,24 +141,27 @@ public class Noter {
 
         System.out.println("\nTasks:\n");
         for (Task task : this.taskPool.values()) {
-            System.out.printf(
-                    "ID: %d\tCreatedOn: %s\tName: %s\tDescription: %s\tDue: %s\n",
-                    task.getTaskId(),
-                    task.getTaskDateTime(),
-                    task.getTaskName(),
-                    task.getTaskDesc(),
-                    task.getDeadLine());
+            if (task.getStatus() == 0 || all) {
+
+                System.out.printf(
+                        "ID: %d\tName: %s\tDescription: %s\tDue: %s\tStatus: %s\n",
+                        task.getTaskId(),
+                        task.getTaskName(),
+                        task.getTaskDesc(),
+                        task.getdue(),
+                        task.getStatus() == 0 ? "Pending" : "Completed");
+            }
+            System.out.println("");
         }
-        System.out.println("");
     }
 
     public void removeTask(int id) {
         if (this.taskPool.containsKey(id) && !this.isTaskPoolEmpty()) {
-            Task removed = this.taskPool.remove(id);
-            db.remove(id);
+            this.taskPool.get(id).setStatus(1);
+            db.update(id);
 
-            this.stdHandle.message(String.format("Removed task '%s', with id: %s\n", removed.getTaskName(), id));
-            this.displayTasks();
+            this.stdHandle.message("Done!\n");
+            this.displayEveryTask(false);
 
             return;
         }

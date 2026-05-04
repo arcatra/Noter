@@ -16,17 +16,19 @@ public class DataBaseSupport {
     public DataBaseSupport() {
         this.stdHandle = new ExHandler();
         this.init();
+        // this.displayTotalRows();
 
     }
 
     private void init() {
         String query = "CREATE TABLE IF NOT EXISTS taskpool ( " +
-                "id INTEGER PRIMARY KEY, name TEXT NOT NULL, description TEXT, duedate TEXT, created TEXT)";
+                "id INTEGER PRIMARY KEY, name TEXT NOT NULL, description TEXT, duedate TEXT, status INTEGER)";
 
         try (Connection dbConn = DriverManager.getConnection(URL);
                 PreparedStatement excQuery = dbConn.prepareStatement(query)) {
 
             excQuery.execute();
+            // System.out.println("INIT");
 
         } catch (SQLException e) {
             stdHandle.panic(String.format("Serious in init -> %s\n", e.getMessage()));
@@ -34,13 +36,31 @@ public class DataBaseSupport {
 
     }
 
+    // private void displayTotalRows() {
+    // String query = "SELECT COUNT(*) FROM taskpool";
+    //
+    // try (Connection dbConn = DriverManager.getConnection(URL);
+    // PreparedStatement excQuery = dbConn.prepareStatement(query)) {
+    //
+    // ResultSet res = excQuery.executeQuery();
+    //
+    // if (res.next()) {
+    // System.out.println("Total no.of rows in DB: " + res.getInt(1));
+    // }
+    //
+    // } catch (SQLException e) {
+    // stdHandle.panic(String.format("Serious in displayTotalRows -> %s\n",
+    // e.getMessage()));
+    // }
+    // }
+
     public void insert(Task task) {
         if (task == null) {
             stdHandle.panic("Serious -> Task Object expected but got 'null'");
             return;
         }
 
-        String insert = "INSERT INTO taskpool (id, name, description, duedate, created) VALUES (?, ?, ?, ?, ?) " +
+        String insert = "INSERT INTO taskpool (id, name, description, duedate, status) VALUES (?, ?, ?, ?, ?) " +
                 "ON CONFLICT(id) DO UPDATE SET name = excluded.name, description = excluded.description";
 
         try (Connection db = DriverManager.getConnection(URL);
@@ -49,10 +69,11 @@ public class DataBaseSupport {
             excQuery.setInt(1, task.getTaskId());
             excQuery.setString(2, task.getTaskName());
             excQuery.setString(3, task.getTaskDesc());
-            excQuery.setString(4, task.getDeadLine());
-            excQuery.setString(5, task.getTaskDateTime());
+            excQuery.setString(4, task.getdue());
+            excQuery.setInt(5, task.getStatus());
 
             excQuery.executeUpdate();
+            // System.out.println("INSERT");
 
         } catch (SQLException e) {
             stdHandle.panic(String.format("Serious in insert -> %s\n", e.getMessage()));
@@ -64,15 +85,47 @@ public class DataBaseSupport {
 
     }
 
+    public List<Task> get() {
+        List<Task> tasks = new ArrayList<>();
+        String query = "SELECT * FROM taskpool";
+
+        try (Connection db = DriverManager.getConnection(URL);
+                PreparedStatement excQuery = db.prepareStatement(query)) {
+
+            ResultSet res = excQuery.executeQuery();
+            // System.out.println("GET");
+
+            while (res.next()) {
+                Task newTask = new Task(res.getInt("id"), res.getString("name"), res.getString("description"),
+                        res.getString("duedate"));
+                // System.out.println("status: " + res.getInt("status"));
+                newTask.setStatus(res.getInt("status"));
+                tasks.add(newTask);
+            }
+
+            return tasks;
+
+        } catch (SQLException e) {
+            stdHandle.panic(String.format("Serious in get -> %s\n", e.getMessage()));
+
+        } catch (Exception e) {
+            stdHandle.panic("Unknown exception: " + e);
+
+        }
+
+        return null;
+    }
+
     public void update(Task Utask) {
-        String insert = "UPDATE taskpool SET name = ?, description = ? WHERE id = ?";
+        String insert = "UPDATE taskpool SET name = ?, description = ?, status = ? WHERE id = ?";
 
         try (Connection db = DriverManager.getConnection(URL);
                 PreparedStatement excQuery = db.prepareStatement(insert)) {
 
             excQuery.setString(1, Utask.getTaskName());
             excQuery.setString(2, Utask.getTaskDesc());
-            excQuery.setInt(3, Utask.getTaskId());
+            excQuery.setInt(3, Utask.getStatus());
+            excQuery.setInt(4, Utask.getTaskId());
 
             excQuery.executeUpdate();
 
@@ -80,6 +133,47 @@ public class DataBaseSupport {
             stdHandle.panic(String.format("Serious in update -> %s\n", e.getMessage()));
 
         }
+    }
+
+    public void update(int id) {
+        String query = "UPDATE taskpool SET status = 1 WHERE id = ?";
+
+        try (Connection db = DriverManager.getConnection(URL);
+                PreparedStatement excQuery = db.prepareStatement(query)) {
+
+            excQuery.setInt(1, id);
+
+            excQuery.executeUpdate();
+            // System.out.println("UPDATE");
+            // db.commit();
+
+        } catch (SQLException e) {
+            stdHandle.panic(String.format("Serious in remove -> %s\n", e.getMessage()));
+
+        } catch (Exception e) {
+            stdHandle.panic("Unknown exception: " + e);
+
+        }
+    }
+
+    public void remove(int id) {
+        String query = "DELETE FROM taskpool WHERE id = ?";
+
+        try (Connection db = DriverManager.getConnection(URL);
+                PreparedStatement excQuery = db.prepareStatement(query)) {
+
+            excQuery.setInt(1, id);
+
+            excQuery.executeUpdate();
+
+        } catch (SQLException e) {
+            stdHandle.panic(String.format("Serious in remove -> %s\n", e.getMessage()));
+
+        } catch (Exception e) {
+            stdHandle.panic("Unknown exception: " + e);
+
+        }
+
     }
 
     public void clear() {
@@ -95,53 +189,6 @@ public class DataBaseSupport {
 
         }
 
-    }
-
-    public void remove(int id) {
-        String query = "DELETE FROM taskpool WHERE id = ?";
-
-        try (Connection db = DriverManager.getConnection(URL);
-                PreparedStatement excQuery = db.prepareStatement(query)) {
-
-            excQuery.setInt(1, id);
-            excQuery.executeUpdate();
-
-        } catch (SQLException e) {
-            stdHandle.panic(String.format("Serious in remove -> %s\n", e.getMessage()));
-
-        } catch (Exception e) {
-            stdHandle.panic("Unknown exception: " + e);
-
-        }
-
-    }
-
-    public List<Task> get() {
-        List<Task> tasks = new ArrayList<>();
-        String query = "SELECT * FROM taskpool";
-
-        try (Connection db = DriverManager.getConnection(URL);
-                PreparedStatement excQuery = db.prepareStatement(query)) {
-
-            ResultSet res = excQuery.executeQuery();
-
-            while (res.next()) {
-                Task newTask = new Task(res.getInt("id"), res.getString("name"), res.getString("description"),
-                        res.getString("duedate"));
-                tasks.add(newTask);
-            }
-
-            return tasks;
-
-        } catch (SQLException e) {
-            stdHandle.panic(String.format("Serious in get -> %s\n", e.getMessage()));
-
-        } catch (Exception e) {
-            stdHandle.panic("Unknown exception: " + e);
-
-        }
-
-        return null;
     }
 
 }

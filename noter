@@ -1,7 +1,28 @@
 #!/bin/bash
 
-# NOTE: This is a gradlw only bash script
+# NOTE: This is a gradelw only bash script
 
-./gradlew build -q
-./gradlew run -q --args="${*@Q}"
+buil() {
+    ./gradlew build -q
+
+}
+
+runWithArgs() {
+    ./gradlew run -q --args="${*@Q}" || exit 1
+
+}
+
+run() {
+    ./gradlew run
+
+}
+
+if [[ $# -eq 0 ]]; then
+   run
+   exit 0
+
+fi
+
+build
+runWithArgs "${*@Q}" 
 

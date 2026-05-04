@@ -2,29 +2,31 @@
 package utils;
 
 // imports ----------
-import java.time.LocalDateTime;
 // ------------------
 
 public class Task {
 
     private int tId;
+    private int status;
     private String tName;
     private String tDesc;
-    private String created;
-    private String deadLine;
+    private String due;
 
-    public Task(int id, String name, String desc, String deadLine) {
-
+    public Task(int id, String name, String desc, String due) {
         this.tId = id;
         this.tName = name;
         this.tDesc = desc;
-        this.deadLine = deadLine;
-        this.created = LocalDateTime.now().toString().substring(0, 10);
-
+        this.due = due;
+        this.status = 0; // 0 - pending, 1 - complete
     }
 
     public int getTaskId() {
         return this.tId;
+
+    }
+
+    public void setTaskId(int newID) {
+        this.tId = newID;
 
     }
 
@@ -38,12 +40,16 @@ public class Task {
 
     }
 
-    public String getDeadLine() {
-        return this.deadLine;
+    public String getdue() {
+        return this.due;
     }
 
-    public String getTaskDateTime() {
-        return this.created;
+    public int getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(int newStatus) {
+        this.status = newStatus;
     }
 
 }
