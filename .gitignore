@@ -11,7 +11,9 @@ build/
 # Ignore data folder, that includes dadabase files
 data/
 
-app/.project
+make/
+
+lpp/.project
 app/.classpath
 app/.settings/
 app/bin/

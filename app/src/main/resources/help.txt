@@ -1,6 +1,6 @@
 help
 
-commands:
+COMMANDS:
     -new            : Add new task to the TaskPool, with a default status code of 0: Pending.
     -display        : Prints the pending(0) tasks from TaskPool to stdout.
     -displayall     : Prints entire TaskPool(completed[1], pending[0]) to stdout.
@@ -15,26 +15,26 @@ commands:
     -help/--help    : Know more about valid commands, and usages.
     -about/--about  : More info about Noter.
 
-Usage:
-    -new "<Name>:<Description>" [-due "date/day/today/tomorrow"(Optional)]<Enter>
-    -display<Enter>
-    -displayall<Enter>
-    -remap<Enter>
-    -remove <task ID: int><Enter>
-    -update <task ID: int> "<new name("." to skip)>" "<new description("." to skip)>" "<due-date(Optional)>"<Enter>
-    -done <task ID: int><Enter>
-    -doneall<Enter>
+SYNOPSIS:
+    -new "<Name>:<Description>" [-due "date/day/today/tomorrow"(Optional)]
+    -display
+    -displayall
+    -remap
+    -remove <task ID: int>
+    -update <task ID: int> "<new name( . to skip)>" "<new description( . to skip)>" "<due-date(Optional)>" # See example below
+    -done <task ID: int>
+    -doneall
 
-    -help/--help<Enter>
-    -about/--about<Enter>
+    -help/--help
+    -about/--about
 
-Examples:
+EXAMPLES:
     -new "A new task name:(colun) is importent here, and this colun seperates the description from task name" -due "Tomorrow"<Enter>
         Note: the -due command is completely optional, but it is reccommended. 
 
     -remove 4<Enter>
 
-    -update 4 "." "." "25-05-2026"<Enter>
+    -update 4 . . "25-05-2026"<Enter>
         Note: here due-date is completely optional, you can skip this if you want, and also you can either have taskName,
               taskDescription or even both.
 

@@ -41,14 +41,14 @@ public class ArgsParser {
         cIndex++;
         if (cIndex >= this.len) {
             this.stdHandle.panic("Missing values for -new, or invalid values");
-            this.stdHandle.message("follow -> -new <name:description>");
+            this.stdHandle.message("Usage: -new <name:description>");
             return cIndex;
         }
 
         // System.out.printf("args[%d]: %s\n", cIndex, this.args[cIndex]);
         if (!this.args[cIndex].contains(":")) {
             this.stdHandle.panic("Not a valid value for -new");
-            this.stdHandle.message("follow -> -new <name:description>");
+            this.stdHandle.message("Usage: -new <name:description>");
             return cIndex;
         }
 
@@ -115,7 +115,7 @@ public class ArgsParser {
         cIndex++;
         if (cIndex >= this.len) {
             stdHandle.panic("invalid values");
-            this.stdHandle.message(String.format("follow -> %s <Task ID>\n", command));
+            this.stdHandle.message(String.format("Usage: %s <Task ID>\n", command));
             return cIndex;
 
         }
@@ -215,7 +215,7 @@ public class ArgsParser {
 
     private void checkArgs() {
         if (!(this.len > 0)) {
-            System.out.println("MESSAGE: Could'nt find any args");
+            this.stdHandle.panic("MESSAGE: Could'nt find any args");
             this.noter.getHelp();
             return;
 

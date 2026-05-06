@@ -3,7 +3,6 @@ package noter;
 
 // Imports ----------
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,7 +23,7 @@ public class Noter {
     DataBaseSupport db;
 
     public Noter() {
-        this.resourcesPath = "src/main/resources/";
+        this.resourcesPath = "app/src/main/resources/";
         this.helper = new Helpers();
         this.stdHandle = new ExHandler();
         this.db = new DataBaseSupport();
@@ -88,12 +87,11 @@ public class Noter {
 
         }
 
-        int id = 1;
-        db.clear();
-        for (Entry<Integer, Task> tEntry : this.taskPool.entrySet()) {
-            tEntry.getValue().setTaskId(id);
+        for (int id = 0; id < this.taskPool.size(); id++) {
+            Task task = this.taskPool.get(id);
+            task.updateTaskID(id);
+            db.updateID(id, task.getTaskId());
             id++;
-            db.insert(tEntry.getValue());
         }
 
         this.displayEveryTask(false);
@@ -109,7 +107,7 @@ public class Noter {
         }
 
         if (this.taskPool.containsKey(id)) {
-            due = due.equals(".") ? this.taskPool.get(id).getdue() : due;
+            due = due.equals(".") ? this.taskPool.get(id).getDue() : due;
             nName = nName.length() <= 1 ? this.taskPool.get(id).getTaskName() : nName;
             nDesc = nDesc.length() <= 1 ? this.taskPool.get(id).getTaskDesc() : nDesc;
 
@@ -158,7 +156,7 @@ public class Noter {
                         task.getTaskId(),
                         task.getTaskName(),
                         task.getTaskDesc(),
-                        task.getdue(),
+                        task.getDue(),
                         task.getStatus() == 0 ? "Pending" : "Completed");
             }
             System.out.println("");
@@ -167,7 +165,7 @@ public class Noter {
 
     public void removeTask(int id) {
         if (this.taskPool.containsKey(id) && !this.isTaskPoolEmpty()) {
-            this.taskPool.get(id).setStatus(1);
+            this.taskPool.get(id).updateStatus(1);
             db.update(id, 1);
 
             this.stdHandle.message("Done!\n");

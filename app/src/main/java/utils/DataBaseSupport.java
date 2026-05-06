@@ -5,16 +5,19 @@ import java.sql.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
 // ---------------------
 
 public class DataBaseSupport {
-    private static final String DBPATH = "../data/taskpool.db";
+    private static final String DBPATH = "data/taskpool.db";
     private static final String URL = "jdbc:sqlite:" + DBPATH;
 
     ExHandler stdHandle;
+    Helpers helper;
 
     public DataBaseSupport() {
         this.stdHandle = new ExHandler();
+        this.helper = new Helpers();
         this.init();
         // this.displayTotalRows();
 
@@ -24,6 +27,12 @@ public class DataBaseSupport {
         String query = "CREATE TABLE IF NOT EXISTS taskpool ( " +
                 "id INTEGER PRIMARY KEY, name TEXT NOT NULL, description TEXT, duedate TEXT, status INTEGER)";
 
+        if (this.helper.isPathExists(DBPATH)) {
+            System.out.println(String.format("DBPath: %s exists\n", DBPATH));
+            return;
+
+        }
+
         try (Connection dbConn = DriverManager.getConnection(URL);
                 PreparedStatement excQuery = dbConn.prepareStatement(query)) {
 
@@ -31,32 +40,14 @@ public class DataBaseSupport {
             // System.out.println("INIT");
 
         } catch (SQLException e) {
-            stdHandle.panic(String.format("Serious in init -> %s\n", e.getMessage()));
+            stdHandle.panic(String.format("in init -> %s\n", e.getMessage()));
         }
 
     }
 
-    // private void displayTotalRows() {
-    // String query = "SELECT COUNT(*) FROM taskpool";
-    //
-    // try (Connection dbConn = DriverManager.getConnection(URL);
-    // PreparedStatement excQuery = dbConn.prepareStatement(query)) {
-    //
-    // ResultSet res = excQuery.executeQuery();
-    //
-    // if (res.next()) {
-    // System.out.println("Total no.of rows in DB: " + res.getInt(1));
-    // }
-    //
-    // } catch (SQLException e) {
-    // stdHandle.panic(String.format("Serious in displayTotalRows -> %s\n",
-    // e.getMessage()));
-    // }
-    // }
-
     public void insert(Task task) {
         if (task == null) {
-            stdHandle.panic("Serious -> Task Object expected but got 'null'");
+            stdHandle.panic("-> Task Object expected but got 'null'");
             return;
         }
 
@@ -69,14 +60,14 @@ public class DataBaseSupport {
             excQuery.setInt(1, task.getTaskId());
             excQuery.setString(2, task.getTaskName());
             excQuery.setString(3, task.getTaskDesc());
-            excQuery.setString(4, task.getdue());
+            excQuery.setString(4, task.getDue());
             excQuery.setInt(5, task.getStatus());
 
             excQuery.executeUpdate();
             // System.out.println("INSERT");
 
         } catch (SQLException e) {
-            stdHandle.panic(String.format("Serious in insert -> %s\n", e.getMessage()));
+            stdHandle.panic(String.format("in insert -> %s\n", e.getMessage()));
 
         } catch (Exception e) {
             stdHandle.panic(e.getMessage());
@@ -99,14 +90,14 @@ public class DataBaseSupport {
                 Task newTask = new Task(res.getInt("id"), res.getString("name"), res.getString("description"),
                         res.getString("duedate"));
                 // System.out.println("status: " + res.getInt("status"));
-                newTask.setStatus(res.getInt("status"));
+                newTask.updateStatus(res.getInt("status"));
                 tasks.add(newTask);
             }
 
             return tasks;
 
         } catch (SQLException e) {
-            stdHandle.panic(String.format("Serious in get -> %s\n", e.getMessage()));
+            stdHandle.panic(String.format("in get -> %s\n", e.getMessage()));
 
         } catch (Exception e) {
             stdHandle.panic("Unknown exception: " + e);
@@ -117,22 +108,46 @@ public class DataBaseSupport {
     }
 
     public void update(Task Utask) {
-        String insert = "UPDATE taskpool SET name = ?, description = ?, status = ? WHERE id = ?";
+        String insert = "UPDATE taskpool SET name = ?, description = ?, duedate = ?, status = ? WHERE id = ?";
 
         try (Connection db = DriverManager.getConnection(URL);
                 PreparedStatement excQuery = db.prepareStatement(insert)) {
 
             excQuery.setString(1, Utask.getTaskName());
             excQuery.setString(2, Utask.getTaskDesc());
-            excQuery.setInt(3, Utask.getStatus());
-            excQuery.setInt(4, Utask.getTaskId());
+            excQuery.setString(3, Utask.getDue());
+            excQuery.setInt(4, Utask.getStatus());
+            excQuery.setInt(5, Utask.getTaskId());
 
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic(String.format("Serious in update -> %s\n", e.getMessage()));
+            stdHandle.panic(String.format("in update -> %s\n", e.getMessage()));
 
         }
+    }
+
+    public void updateID(int newId, int currId) {
+        String query = "UPDATE taskpool SET id = ? WHERE id = ?";
+
+        try (Connection db = DriverManager.getConnection(URL);
+                PreparedStatement excQuery = db.prepareStatement(query)) {
+
+            excQuery.setInt(1, newId);
+            excQuery.setInt(2, currId);
+
+            excQuery.executeUpdate();
+            // System.out.println("UPDATE");
+            // db.commit();
+
+        } catch (SQLException e) {
+            stdHandle.panic(String.format("in remove -> %s\n", e.getMessage()));
+
+        } catch (Exception e) {
+            stdHandle.panic("Unknown exception: " + e);
+
+        }
+
     }
 
     public void update(int id, int status) {
@@ -149,7 +164,7 @@ public class DataBaseSupport {
             // db.commit();
 
         } catch (SQLException e) {
-            stdHandle.panic(String.format("Serious in remove -> %s\n", e.getMessage()));
+            stdHandle.panic(String.format("in remove -> %s\n", e.getMessage()));
 
         } catch (Exception e) {
             stdHandle.panic("Unknown exception: " + e);
@@ -169,7 +184,7 @@ public class DataBaseSupport {
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic(String.format("Serious in updateAllStatus -> %s\n", e.getMessage()));
+            stdHandle.panic(String.format("in updateAllStatus -> %s\n", e.getMessage()));
 
         } catch (Exception e) {
             stdHandle.panic("Unknown exception: " + e);
@@ -189,7 +204,7 @@ public class DataBaseSupport {
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic(String.format("Serious in remove -> %s\n", e.getMessage()));
+            stdHandle.panic(String.format("in remove -> %s\n", e.getMessage()));
 
         } catch (Exception e) {
             stdHandle.panic("Unknown exception: " + e);
@@ -207,7 +222,7 @@ public class DataBaseSupport {
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic(String.format("Serious in clear -> %s\n", e.getMessage()));
+            stdHandle.panic(String.format("in clear -> %s\n", e.getMessage()));
 
         }
 

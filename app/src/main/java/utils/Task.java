@@ -25,7 +25,7 @@ public class Task {
 
     }
 
-    public void setTaskId(int newID) {
+    public void updateTaskID(int newID) {
         this.tId = newID;
 
     }
@@ -40,7 +40,7 @@ public class Task {
 
     }
 
-    public String getdue() {
+    public String getDue() {
         return this.due;
     }
 
@@ -48,7 +48,7 @@ public class Task {
         return this.status;
     }
 
-    public void setStatus(int newStatus) {
+    public void updateStatus(int newStatus) {
         this.status = newStatus;
     }
 

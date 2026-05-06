@@ -18,7 +18,7 @@ public class Helpers {
 
     public boolean isPathExists(String filePath) {
         Path path = Paths.get(filePath);
-        System.out.println("Current working dir: " + System.getProperty("user.dir"));
+        // System.out.println("Current working dir: " + System.getProperty("user.dir"));
         return (Files.exists(path));
 
     }
@@ -38,7 +38,7 @@ public class Helpers {
             }
 
         } else {
-            System.out.printf("Error: %s Provided path doesn't exists\n", filePath);
+            System.out.printf("Error: path %s doesn't exists\n", filePath);
 
         }
 
