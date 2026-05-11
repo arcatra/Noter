@@ -15,4 +15,8 @@ public class ExHandler {
         System.out.printf("Fatal: %s", err);
     }
 
+    public void stdout(String msg) {
+        System.out.println(msg);
+    }
+
 }

@@ -1,6 +1,6 @@
 help
 
-COMMANDS:
+SYNOPSIS:
     -new            : Add new task to the TaskPool, with a default status code of 0: Pending.
     -display        : Prints the pending(0) tasks from TaskPool to stdout.
     -displayall     : Prints entire TaskPool(completed[1], pending[0]) to stdout.
@@ -15,8 +15,8 @@ COMMANDS:
     -help/--help    : Know more about valid commands, and usages.
     -about/--about  : More info about Noter.
 
-SYNOPSIS:
-    -new "<Name>:<Description>" [-due "date/day/today/tomorrow"(Optional)]
+USAGE:
+    -new "<Name>=<Description>" [-due "date/day/today/tomorrow"(Optional)]
     -display
     -displayall
     -remap
@@ -29,7 +29,7 @@ SYNOPSIS:
     -about/--about
 
 EXAMPLES:
-    -new "A new task name:(colun) is importent here, and this colun seperates the description from task name" -due "Tomorrow"<Enter>
+    -new "A new task name=(colun) is importent here, and this colun seperates the description from task name" -due "Tomorrow"<Enter>
         Note: the -due command is completely optional, but it is reccommended. 
 
     -remove 4<Enter>
@@ -42,6 +42,6 @@ EXAMPLES:
 
     Note:
         1. You can have multiple command in the same line, like so: -new "task:description" -display -done 2 -remap ...  .
-        2. Observe a "single space" between every valid command, that is how the syntax for this tool works.
+        2. Observe a "single space" between every valid command, you need to provide single space after command.
         3. Every valid command will be executed in a left to right order, say above exmple, 1. -new, 2. -display, 3. -done ....
         

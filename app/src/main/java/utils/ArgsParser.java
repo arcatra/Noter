@@ -46,13 +46,13 @@ public class ArgsParser {
         }
 
         // System.out.printf("args[%d]: %s\n", cIndex, this.args[cIndex]);
-        if (!this.args[cIndex].contains(":")) {
+        if (!this.args[cIndex].contains("=")) {
             this.stdHandle.panic("Not a valid value for -new");
             this.stdHandle.message("Usage: -new <name:description>");
             return cIndex;
         }
 
-        String[] vessal = this.args[cIndex].split(":");
+        String[] vessal = this.args[cIndex].split("=");
         String tName = vessal[0];
         String tDesc = vessal[1];
 
@@ -215,7 +215,7 @@ public class ArgsParser {
 
     private void checkArgs() {
         if (!(this.len > 0)) {
-            this.stdHandle.panic("MESSAGE: Could'nt find any args");
+            this.stdHandle.panic("Could'nt find any args");
             this.noter.getHelp();
             return;
 

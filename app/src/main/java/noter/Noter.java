@@ -86,12 +86,17 @@ public class Noter {
             return;
 
         }
+        int id = 1;
+        for (Map.Entry<Integer, Task> taskSet : this.taskPool.entrySet()) {
+            Task task = taskSet.getValue();
+            if (task.getStatus() == 0) {
+                task.updateTaskID(id);
+                db.updateID(id, task.getTaskId());
+                id++;
 
-        for (int id = 0; id < this.taskPool.size(); id++) {
-            Task task = this.taskPool.get(id);
-            task.updateTaskID(id);
-            db.updateID(id, task.getTaskId());
-            id++;
+            } else {
+                System.out.printf("Remap: Skipped task: %d, since the task is completed\n", task.getTaskId());
+            }
         }
 
         this.displayEveryTask(false);
