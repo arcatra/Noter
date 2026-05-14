@@ -75,32 +75,9 @@ public class Noter {
 
         db.insert(newTask);
         stdHandle.message("Successfully added a task to database\n");
-        this.displayEveryTask(false);
+        this.listAllTasks(false);
 
         currId++;
-    }
-
-    public void remap() {
-        if (this.isTaskPoolEmpty()) {
-            stdHandle.message("No tasks yet to sync tasks");
-            return;
-
-        }
-        int id = 1;
-        for (Map.Entry<Integer, Task> taskSet : this.taskPool.entrySet()) {
-            Task task = taskSet.getValue();
-            if (task.getStatus() == 0) {
-                task.updateTaskID(id);
-                db.updateID(id, task.getTaskId());
-                id++;
-
-            } else {
-                System.out.printf("Remap: Skipped task: %d, since the task is completed\n", task.getTaskId());
-            }
-        }
-
-        this.displayEveryTask(false);
-
     }
 
     public void updateTask(int id, String nName, String nDesc, String due) {
@@ -122,7 +99,7 @@ public class Noter {
             db.update(newTask);
 
             stdHandle.message(String.format("Done!, updated the given task: %d\n", id));
-            this.displayEveryTask(false);
+            this.listAllTasks(false);
 
         } else {
             stdHandle.message("No task found with given ID");
@@ -137,15 +114,16 @@ public class Noter {
 
         }
 
-        stdHandle.panic(String.format("Not a valid status %d and %d, only 0 or 1", pastStatus, newStatus));
+        stdHandle.panic(String.format("One of the task status is not valid, past: %d, new: %d, only 0 or 1 acceptable",
+                pastStatus, newStatus));
 
     }
 
-    public void displayAll() {
-        this.displayEveryTask(true);
+    public void listAll() {
+        this.listAllTasks(true);
     }
 
-    public void displayEveryTask(boolean all) {
+    public void listAllTasks(boolean all) {
 
         if (this.isTaskPoolEmpty()) {
             System.out.println("No tasks found\n");
@@ -157,7 +135,7 @@ public class Noter {
             if (task.getStatus() == 0 || all) {
 
                 System.out.printf(
-                        "ID: %d\tName: %s\tDescription: %s\tDue: %s\tStatus: %s\n",
+                        "ID: %d\tName: %s\t\tDescription: %s\t\tDue: %s\t\tStatus: %s\n",
                         task.getTaskId(),
                         task.getTaskName(),
                         task.getTaskDesc(),
@@ -170,11 +148,25 @@ public class Noter {
 
     public void removeTask(int id) {
         if (this.taskPool.containsKey(id) && !this.isTaskPoolEmpty()) {
+            this.taskPool.remove(id);
+            db.remove(id);
+
+            this.stdHandle.message("Done!, removed task: " + id);
+            return;
+        }
+
+        System.out.printf("No task found with id: %d or TaskPool is empty\n", id);
+
+    }
+
+    public void updateStatus(int id) {
+
+        if (this.taskPool.containsKey(id) && !this.isTaskPoolEmpty()) {
             this.taskPool.get(id).updateStatus(1);
             db.update(id, 1);
 
             this.stdHandle.message("Done!\n");
-            this.displayEveryTask(false);
+            this.listAllTasks(false);
 
             return;
         }

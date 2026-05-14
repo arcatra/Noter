@@ -1,25 +1,23 @@
 help
 
 SYNOPSIS:
-    -new            : Add new task to the TaskPool, with a default status code of 0: Pending.
-    -display        : Prints the pending(0) tasks from TaskPool to stdout.
-    -displayall     : Prints entire TaskPool(completed[1], pending[0]) to stdout.
-    -due            : Add a due-date while adding a task, if not provided with -new command this would default to "None".
-    -remap          : Re-Maps(Re-Index) the entire TaskPool IDs from 1,..N, in an incremental way.
+    -add            : Add new task to the TaskPool, with a default status code of 0 that is "Pending".
+    -list           : Prints the pending(0) tasks from TaskPool to stdout.
+    -listall        : Prints entire TaskPool(completed[1], pending[0]) to stdout.
+    -due            : Add a due-date while adding a task, if not provided with -add flag this would default to "None".
     -remove         : Remove a task from the TaskPool, And also from the DBT: TaskPool.
     -update         : Update a task - NAME / DESCRIPTION / DUE, with ID.
     -done           : Mark a task status as "Completed", and archive the task(This won't remove the task from TaskPool).
     -doneall        : Mark all of the tasks status as "Completed", there would be no pending tasks in TaskPool after this. 
                       Unless you add one.
 
-    -help/--help    : Know more about valid commands, and usages.
+    -help/--help    : Know more about valid flags, options, and usages.
     -about/--about  : More info about Noter.
 
 USAGE:
-    -new "<Name>=<Description>" [-due "date/day/today/tomorrow"(Optional)]
-    -display
-    -displayall
-    -remap
+    -add "<Name>=<Description>" [-due "date/day/today/tomorrow"(Optional)]
+    -list
+    -listall
     -remove <task ID: int>
     -update <task ID: int> "<new name( . to skip)>" "<new description( . to skip)>" "<due-date(Optional)>" # See example below
     -done <task ID: int>
@@ -29,19 +27,20 @@ USAGE:
     -about/--about
 
 EXAMPLES:
-    -new "A new task name=(colun) is importent here, and this colun seperates the description from task name" -due "Tomorrow"<Enter>
-        Note: the -due command is completely optional, but it is reccommended. 
+    -add "A new task name=description for the task, '=' seperates the description from task name" -due "Tomorrow"<Enter>
+        Note: the -due flag is completely optional, but it is reccommended. 
 
-    -remove 4<Enter>
+    -remove 4 5 6 ....<Enter>
 
     -update 4 . . "25-05-2026"<Enter>
         Note: here due-date is completely optional, you can skip this if you want, and also you can either have taskName,
               taskDescription or even both.
 
-    -done 3<Enter>
+    -done 3 2 7 1 ....<Enter>
 
     Note:
-        1. You can have multiple command in the same line, like so: -new "task:description" -display -done 2 -remap ...  .
-        2. Observe a "single space" between every valid command, you need to provide single space after command.
-        3. Every valid command will be executed in a left to right order, say above exmple, 1. -new, 2. -display, 3. -done ....
+        1. You can have multiple flag in the same line, like so: -add "task:description" -list -done 2 4 9  ...
+        2. Observe a "single space" between every valid flag flags, every no flag after a flag flag will be treated as values.
+        3. "-remove", and "-done" flags can handle multiple values at the same time.
+        4. Every valid flag will be executed in a left to right order, say above exmple: 1. -add, 2. -list, 3. -done ....
         

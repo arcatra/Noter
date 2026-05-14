@@ -128,29 +128,6 @@ public class DataBaseSupport {
         }
     }
 
-    public void updateID(int newID, int currID) {
-        String query = "UPDATE taskpool SET id = ? WHERE id = ?";
-
-        try (Connection db = DriverManager.getConnection(URL);
-                PreparedStatement excQuery = db.prepareStatement(query)) {
-
-            excQuery.setInt(1, newID);
-            excQuery.setInt(2, currID);
-
-            excQuery.executeUpdate();
-            // System.out.println("UPDATE");
-            // db.commit();
-
-        } catch (SQLException e) {
-            stdHandle.panic(String.format("in remove -> %s\n", e.getMessage()));
-
-        } catch (Exception e) {
-            stdHandle.panic(e.getMessage());
-
-        }
-
-    }
-
     public void update(int id, int status) {
         String query = "UPDATE taskpool SET status = ? WHERE id = ?";
 
