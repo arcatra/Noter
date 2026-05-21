@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 
 # HeadsUp: This bash script cannot track changes.
@@ -9,9 +9,9 @@
 
 # How to run this file:
 #   NOTE: Update the folder structure for "root", "bin" and "lib" as needed.
-#   Navigate to the parent dir of this script, and make it executable: chmod +x ./crun
-#   run it: ./crun <any args> (You have to specify the path, if this script is not in PWD)
-#   NOTE: This is a one time setup, and you can pass args if needed "crun" will pass them directly to java.
+#   Navigate to the parent dir of this script, and make it executable: chmod +x ./noter
+#   run it: ./noter <any args> (You have to specify the path, if this script is not in PWD)
+#   NOTE: This is a one time setup, and you can pass args if needed "noter" will pass them directly to java.
 
 YELLOW="\033[0;93m"
 RED="\033[0;31m"

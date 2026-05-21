@@ -2,8 +2,8 @@ package utils;
 
 public class ExHandler {
 
-    public void panic(String err) {
-        System.err.printf("Error: %s\n", err);
+    public void flowError(String err) {
+        System.err.printf("Flow Error: %s\n", err);
 
     }
 
@@ -11,7 +11,7 @@ public class ExHandler {
         System.out.printf("Message: %s\n", msg);
     }
 
-    public void fatal(String err) {
+    public void panic(String err) {
         System.out.printf("Fatal: %s\n", err);
     }
 

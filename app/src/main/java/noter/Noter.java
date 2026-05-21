@@ -114,8 +114,9 @@ public class Noter {
 
         }
 
-        stdHandle.panic(String.format("One of the task status is not valid, past: %d, new: %d, only 0 or 1 acceptable",
-                pastStatus, newStatus));
+        stdHandle.flowError(
+                String.format("One of the task status is not valid, past: %d, new: %d, only 0 or 1 acceptable",
+                        pastStatus, newStatus));
 
     }
 

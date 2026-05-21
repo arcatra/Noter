@@ -41,14 +41,14 @@ public class DataBaseSupport {
             // System.out.println("INIT");
 
         } catch (SQLException e) {
-            stdHandle.fatal(String.format("in init -> %s\n", e.getMessage()));
+            stdHandle.panic(String.format("in init -> %s\n", e.getMessage()));
         }
 
     }
 
     public void insert(Task task) {
         if (task == null) {
-            stdHandle.fatal("Task Object expected but got 'null'");
+            stdHandle.panic("Task Object expected but got 'null'");
             return;
         }
 
@@ -68,10 +68,10 @@ public class DataBaseSupport {
             // System.out.println("INSERT");
 
         } catch (SQLException e) {
-            stdHandle.fatal(String.format("in insert -> %s\n", e.getMessage()));
+            stdHandle.panic(String.format("in insert -> %s\n", e.getMessage()));
 
         } catch (Exception e) {
-            stdHandle.panic(e.getMessage());
+            stdHandle.flowError(e.getMessage());
 
         }
 
@@ -98,10 +98,10 @@ public class DataBaseSupport {
             return tasks;
 
         } catch (SQLException e) {
-            stdHandle.fatal(String.format("in get -> %s\n", e.getMessage()));
+            stdHandle.panic(String.format("in get -> %s\n", e.getMessage()));
 
         } catch (Exception e) {
-            stdHandle.panic(e.getMessage());
+            stdHandle.flowError(e.getMessage());
 
         }
 
@@ -123,7 +123,7 @@ public class DataBaseSupport {
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic(String.format("in update -> %s\n", e.getMessage()));
+            stdHandle.flowError(String.format("in update -> %s\n", e.getMessage()));
 
         }
     }
@@ -142,10 +142,10 @@ public class DataBaseSupport {
             // db.commit();
 
         } catch (SQLException e) {
-            stdHandle.panic(String.format("in remove -> %s\n", e.getMessage()));
+            stdHandle.flowError(String.format("in remove -> %s\n", e.getMessage()));
 
         } catch (Exception e) {
-            stdHandle.panic(e.getMessage());
+            stdHandle.flowError(e.getMessage());
 
         }
     }
@@ -162,10 +162,10 @@ public class DataBaseSupport {
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic(String.format("in updateAllStatus -> %s\n", e.getMessage()));
+            stdHandle.flowError(String.format("in updateAllStatus -> %s\n", e.getMessage()));
 
         } catch (Exception e) {
-            stdHandle.panic(e.getMessage());
+            stdHandle.flowError(e.getMessage());
 
         }
 
@@ -182,10 +182,10 @@ public class DataBaseSupport {
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic(String.format("in remove -> %s\n", e.getMessage()));
+            stdHandle.flowError(String.format("in remove -> %s\n", e.getMessage()));
 
         } catch (Exception e) {
-            stdHandle.panic(e.getMessage());
+            stdHandle.flowError(e.getMessage());
 
         }
 
@@ -200,7 +200,7 @@ public class DataBaseSupport {
             excQuery.executeUpdate();
 
         } catch (SQLException e) {
-            stdHandle.panic(String.format("in clear -> %s\n", e.getMessage()));
+            stdHandle.flowError(String.format("in clear -> %s\n", e.getMessage()));
 
         }
 

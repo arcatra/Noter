@@ -15,7 +15,7 @@ SYNOPSIS:
     -about/--about  : More info about Noter.
 
 USAGE:
-    -add "<Name>=<Description>" [-due "date/day/today/tomorrow"(Optional)]
+    -add "<Name>" "<Description>" [-due "date/day/today/tomorrow"(Optional)]
     -list
     -listall
     -remove <task ID: int>
@@ -27,8 +27,9 @@ USAGE:
     -about/--about
 
 EXAMPLES:
-    -add "A new task name=description for the task, '=' seperates the description from task name" -due "Tomorrow"<Enter>
-        Note: the -due flag is completely optional, but it is reccommended. 
+    -add "A new task" "seperate the description from task name" -due "Tomorrow"<Enter>
+        IMP: 1. the -due flag is completely optional, but it is reccommended.
+             2. Description for the task is expected every time, and would throw an "FlowError" if not provided.
 
     -remove 4 5 6 ....<Enter>
 
@@ -38,6 +39,7 @@ EXAMPLES:
 
     -done 3 2 7 1 ....<Enter>
 
+    IMP: You can provided more than one valid task ids for -remove and -done, would scan it from left to right.
     Note:
         1. You can have multiple flag in the same line, like so: -add "task:description" -list -done 2 4 9  ...
         2. Observe a "single space" between every valid flag flags, every no flag after a flag flag will be treated as values.

@@ -29,7 +29,7 @@ public class ArgsParser {
                     "-about", "--about",
                     "-help", "--help"));
 
-    private Map<String, ArrayList<String>> flags = new LinkedHashMap<>();
+    private Map<String, ArrayList<String>> processedFlags = new LinkedHashMap<>();
 
     public ArgsParser(String[] args, Noter noter) {
         this.args = args;
@@ -42,14 +42,13 @@ public class ArgsParser {
 
     private void init() {
         if (!(this.len > 0)) {
-            this.stdHandle.panic("Could'nt find any args");
             this.noter.getHelp();
             return;
 
         }
 
-        this.createCommands();
-        this.executeCommands();
+        this.createFlags();
+        this.executeFlags();
     }
 
     private ArrayList<String> getCommandValues(int index) {
@@ -57,6 +56,7 @@ public class ArgsParser {
 
         while (index < this.args.length) {
             String flag = this.args[index];
+
             if ((flag.startsWith("-") || flag.startsWith("--"))) {
                 break;
             }
@@ -69,10 +69,11 @@ public class ArgsParser {
         return values;
     }
 
-    private void createCommands() {
+    private void createFlags() {
         int index = 0;
         while (index < this.args.length) {
             String flag = this.args[index];
+
             if (!(flag.startsWith("-") || flag.startsWith("--"))) {
                 index++;
                 continue;
@@ -80,13 +81,13 @@ public class ArgsParser {
             }
 
             if (!(this.validFlags.contains(flag))) {
-                this.stdHandle.panic("Not a valid flag: " + flag);
+                this.stdHandle.flowError("Not a valid flag: " + flag);
                 index++;
                 continue;
             }
 
             ArrayList<String> values = this.getCommandValues(index + 1);
-            this.flags.put(flag, values);
+            this.processedFlags.put(flag, values);
             if (values.size() > 0) {
                 index += values.size();
 
@@ -95,30 +96,29 @@ public class ArgsParser {
             index++;
         }
 
-        System.out.println(flags);
+        System.out.println(processedFlags);
     }
 
     private void handleNewTask(ArrayList<String> values) {
         if (values.size() <= 0) {
-            this.stdHandle.panic("No values provided for -add");
+            this.stdHandle.flowError("No values provided for -add");
             return;
 
         }
 
-        if (!values.get(0).contains("=")) {
-            this.stdHandle.panic("Not a valid value for -add");
-            this.stdHandle.usage("-add <Task name=description>");
+        if (values.size() < 2) {
+            this.stdHandle.flowError("Missing values for -add");
+            this.stdHandle.usage("-add <Task name> <description>");
 
             return;
         }
 
-        String[] vessel = values.get(0).split("=");
-        String tName = vessel[0];
-        String tDesc = vessel[1];
+        String tName = values.get(0);
+        String tDesc = values.get(1);
         String dueDate = "None";
 
-        if (this.flags.containsKey("-due") && this.flags.get("-due").size() > 0) {
-            dueDate = this.flags.get("-due").get(0);
+        if (this.processedFlags.containsKey("-due") && this.processedFlags.get("-due").size() > 0) {
+            dueDate = this.processedFlags.get("-due").get(0);
         }
 
         this.noter.addTask(tName, tDesc, dueDate);
@@ -132,7 +132,7 @@ public class ArgsParser {
 
     private void handleUpdate(ArrayList<String> values) {
         if (values.size() <= 0 || !(this.isValid(3, values.size()))) {
-            this.stdHandle.panic("Missing values for -update");
+            this.stdHandle.flowError("Missing values for -update");
             this.stdHandle.usage(
                     "-update <id> <new task name(. for existing)> <new description(. for existing)> <DueDate(Optional)>");
 
@@ -144,11 +144,11 @@ public class ArgsParser {
             id = Integer.parseInt(values.get(0));
 
         } catch (NumberFormatException e) {
-            stdHandle.panic(String.format("Not a valid id: %s\n", values.get(0)));
+            stdHandle.flowError(String.format("Not a valid id: %s\n", values.get(0)));
             return;
 
         } catch (Exception e) {
-            stdHandle.panic(e.getMessage());
+            stdHandle.flowError(e.getMessage());
         }
 
         String due = ".";
@@ -165,7 +165,7 @@ public class ArgsParser {
 
     private void markAsDone(ArrayList<String> values) {
         if (values.size() <= 0) {
-            stdHandle.panic("invalid values");
+            stdHandle.flowError("invalid values");
             this.stdHandle.usage("-done <Task ID>\n");
 
         }
@@ -175,10 +175,10 @@ public class ArgsParser {
                 this.noter.updateStatus(id);
 
             } catch (NumberFormatException e) {
-                stdHandle.panic(String.format("%s: is not a valid task ID\n", index));
+                stdHandle.flowError(String.format("%s: is not a valid task ID\n", index));
 
             } catch (Exception e) {
-                this.stdHandle.panic(e.getMessage());
+                this.stdHandle.flowError(e.getMessage());
 
             }
 
@@ -190,7 +190,7 @@ public class ArgsParser {
 
     private void handleRemove(ArrayList<String> values) {
         if (values.size() <= 0) {
-            stdHandle.panic("invalid values");
+            stdHandle.flowError("invalid values");
             this.stdHandle.usage("-remove <Task ID>\n");
 
         }
@@ -200,10 +200,10 @@ public class ArgsParser {
                 this.noter.removeTask(id);
 
             } catch (NumberFormatException e) {
-                stdHandle.panic(String.format("%s: is not a valid task ID\n", index));
+                stdHandle.flowError(String.format("%s: is not a valid task ID\n", index));
 
             } catch (Exception e) {
-                this.stdHandle.panic(e.getMessage());
+                this.stdHandle.flowError(e.getMessage());
 
             }
         }
@@ -212,11 +212,11 @@ public class ArgsParser {
 
     }
 
-    private void executeCommands() {
+    private void executeFlags() {
         String flag;
         ArrayList<String> values;
 
-        for (Map.Entry<String, ArrayList<String>> cmdEntry : this.flags.entrySet()) {
+        for (Map.Entry<String, ArrayList<String>> cmdEntry : this.processedFlags.entrySet()) {
             flag = cmdEntry.getKey();
             values = cmdEntry.getValue();
 
