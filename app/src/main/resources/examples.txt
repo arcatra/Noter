@@ -1,0 +1,32 @@
+EXAMPLES:
+EX 1: 
+    -a "A new task" "separate the description from task name" --due "Tomorrow"<Enter>
+
+    IMP:1. the --due flag is completely optional, but is recommended for adding a due date to your tasks.
+        2. Description for the task is expected every time, and would throw an "FlowError" if not provided.
+
+EX 2: 
+    -rm 4 5 6 ....<Enter>
+
+EX 3.1: 
+    -update 4 . . "25-05-2026"<Enter>
+
+EX 3.2: 
+    -u 4 "New task" .
+
+    Note: The due-date is completely optional, you can skip this if you want, and also you can either have taskName, taskDescription or even both.
+
+EX 4: 
+    -m 3 2 7 1 ....<Enter>
+
+    Note: You can provide more than one valid task ids for -remove[-rm] and -done[-m], and these flags scan input from left to right.
+
+EX 5: 
+    -a "New task" "Description" --due "today" -l -m 2 -la -rm 2 3 7
+
+Note:
+    1. You can have multiple flags in the same line, like so: -add "task:description" -list -done 2 4 9  ...
+    2. Observe a "single space" between every valid flag, every input after a flag will be treated as values.
+    3. "-remove", and "-done" flags can handle multiple values at the same time.
+    4. Every valid flag will be executed in a left to right order, in EX 5: 1. -a[-add], 2. -l[-list], 3. -m[-done], 4. -la[-listall], 5. -rm[-remove]
+

@@ -3,13 +3,16 @@ package utils;
 // Imports -------------
 import java.sql.*;
 
+import java.io.File;
+
 import java.util.ArrayList;
 import java.util.List;
 
 // ---------------------
 
 public class DataBaseSupport {
-    private static final String DBPATH = "data/taskpool.db";
+    private static final String DBDIR = "data/";
+    private static final String DBPATH = DBDIR + "taskpool.db";
     private static final String URL = "jdbc:sqlite:" + DBPATH;
 
     ExHandler stdHandle;
@@ -18,9 +21,18 @@ public class DataBaseSupport {
     public DataBaseSupport() {
         this.stdHandle = new ExHandler();
         this.helper = new Helpers();
+        this.checkDB();
         this.init();
         // this.displayTotalRows();
 
+    }
+
+    private void checkDB() {
+        File dbdir = new File(DBDIR);
+        if (!dbdir.exists()) {
+            dbdir.mkdirs();
+
+        }
     }
 
     private void init() {
@@ -28,9 +40,9 @@ public class DataBaseSupport {
                 "id INTEGER PRIMARY KEY, name TEXT NOT NULL, description TEXT, duedate TEXT, status INTEGER)";
 
         if (this.helper.isPathExists(DBPATH)) {
-            this.stdHandle.stdout(String.format("Found DBPath", DBPATH));
-            this.stdHandle.stdout("Establishing DataBase connection");
-            this.stdHandle.stdout("Success");
+            System.out.println(String.format("Found DBPath", DBPATH));
+            System.out.println("Trying to establish DataBase connection");
+            System.out.println("Success, Connected to DataBase!");
 
         }
 
@@ -93,7 +105,12 @@ public class DataBaseSupport {
                 // System.out.println("status: " + res.getInt("status"));
                 newTask.updateStatus(res.getInt("status"));
                 tasks.add(newTask);
+
             }
+
+            // if (tasks.isEmpty()) {
+            // return null;
+            // }
 
             return tasks;
 

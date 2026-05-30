@@ -15,26 +15,26 @@ public class Noter {
     public Map<Integer, Task> taskPool = new HashMap<>();
     public int currId;
 
-    public static Noter obj;
-
     Helpers helper;
     ArgsParser argsParser;
     ExHandler stdHandle;
     DataBaseSupport db;
 
-    public Noter() {
+    public Noter(String[] args) {
         this.resourcesPath = "app/src/main/resources/";
         this.helper = new Helpers();
         this.stdHandle = new ExHandler();
-        this.db = new DataBaseSupport();
+        this.argsParser = new ArgsParser(args, this);
 
+        this.db = new DataBaseSupport();
         this.init();
+
+        this.argsParser.init();
 
     }
 
     public static void main(String[] args) {
-        Noter.obj = new Noter();
-        obj.argsParser = new ArgsParser(args, Noter.obj);
+        new Noter(args);
 
     }
 
@@ -63,9 +63,25 @@ public class Noter {
 
     }
 
-    public void getHelp() {
-        helper.readFile(this.resourcesPath + "help.txt");
+    public void getPartialhelp() {
+        helper.readFile(this.resourcesPath + "partialhelp.txt");
 
+    }
+
+    public void getEveryHelp() {
+        if (helper.isPathExists(this.resourcesPath)) {
+            this.getPartialhelp();
+            this.hGetUsage();
+            this.hGetExamples();
+        }
+    }
+
+    public void hGetUsage() {
+        helper.readFile(this.resourcesPath + "usage.txt");
+    }
+
+    public void hGetExamples() {
+        helper.readFile(this.resourcesPath + "examples.txt");
     }
 
     public void addTask(String tName, String tDesc, String due) {

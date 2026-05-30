@@ -15,12 +15,4 @@ public class ExHandler {
         System.out.printf("Fatal: %s\n", err);
     }
 
-    public void stdout(String msg) {
-        System.out.println(msg);
-    }
-
-    public void usage(String msg) {
-        System.out.println("Usage: " + msg);
-    }
-
 }
