@@ -20,6 +20,10 @@ public class Noter {
     ExHandler stdHandle;
     DataBaseSupport db;
 
+    private final String RESET = "\u001B[0m";
+    private final String RED = "\u001B[31m";
+    private final String GREEN = "\u001B[32m";
+
     public Noter(String[] args) {
         this.resourcesPath = "app/src/main/resources/";
         this.helper = new Helpers();
@@ -28,7 +32,6 @@ public class Noter {
 
         this.db = new DataBaseSupport();
         this.init();
-
         this.argsParser.init();
 
     }
@@ -91,7 +94,7 @@ public class Noter {
 
         db.insert(newTask);
         stdHandle.message("Successfully added a task to database\n");
-        this.listAllTasks(false);
+        this.listTasks(0, "Pending Tasks");
 
         currId++;
     }
@@ -115,7 +118,7 @@ public class Noter {
             db.update(newTask);
 
             stdHandle.message(String.format("Done!, updated the given task: %d\n", id));
-            this.listAllTasks(false);
+            this.listTasks(0, "Pending Tasks");
 
         } else {
             stdHandle.message("No task found with given ID");
@@ -136,31 +139,40 @@ public class Noter {
 
     }
 
-    public void listAll() {
-        this.listAllTasks(true);
-    }
-
-    public void listAllTasks(boolean all) {
-
+    public void listTasks(int status, String legend) {
+        int archived = 0;
         if (this.isTaskPoolEmpty()) {
             System.out.println("No tasks found\n");
             return;
         }
 
-        System.out.println("\nTasks:\n");
+        System.out.printf("\n%s:\n\n", legend);
         for (Task task : this.taskPool.values()) {
-            if (task.getStatus() == 0 || all) {
-
+            if (task.getStatus() == status || status == -1) {
                 System.out.printf(
-                        "ID: %d\tName: %s\t\tDescription: %s\t\tDue: %s\t\tStatus: %s\n",
+                        "%sID: %s%d\t%sName: %s%s\t%sDescription: %s%s\t%sDue: %s%s\t%sStatus: %s%s\n\n",
+                        RED,
+                        RESET,
                         task.getTaskId(),
+                        GREEN,
+                        RESET,
                         task.getTaskName(),
+                        GREEN,
+                        RESET,
                         task.getTaskDesc(),
+                        GREEN,
+                        RESET,
                         task.getDue(),
+                        GREEN,
+                        RESET,
                         task.getStatus() == 0 ? "Pending" : "Completed");
+
             }
-            System.out.println("");
+
+            archived += task.getStatus() == 1 ? 1 : 0;
         }
+
+        System.out.printf("\n%d Archived task%s\n", archived, archived > 1 ? "s" : "");
     }
 
     public void removeTask(int id) {
@@ -182,13 +194,43 @@ public class Noter {
             this.taskPool.get(id).updateStatus(1);
             db.update(id, 1);
 
-            this.stdHandle.message("Done!\n");
-            this.listAllTasks(false);
-
+            this.stdHandle.message("Done! Updated the status to Completed(1)\n");
             return;
         }
 
         System.out.printf("No task found with id: %d or TaskPool is empty\n", id);
+    }
+
+    public void cleanTaskPool() {
+        if (this.isTaskPoolEmpty()) {
+            System.out.println("TaskPool is Empty");
+            return;
+        }
+
+        Task[] removable = new Task[this.taskPool.size()];
+        int index = 0;
+
+        for (Task task : this.taskPool.values()) {
+            if (task.getStatus() == 1) {
+                removable[index] = task;
+                index++;
+            }
+        }
+
+        if (index <= 0) {
+            System.out.println("NO Archived tasks found");
+            return;
+        }
+
+        for (Task task : removable) {
+            if (task != null) {
+                this.taskPool.remove(task.getTaskId());
+                this.db.remove(task.getTaskId());
+            }
+        }
+
+        System.out.println("Successfully cleaned the TaskPool");
+
     }
 
     public void clearTaskPool() {

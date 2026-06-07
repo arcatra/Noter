@@ -3,7 +3,7 @@ package utils;
 // Imports ------------
 import noter.Noter;
 import utils.exp.ErrorType;
-import utils.exp.RunTimeExpService;
+import utils.exp.RunTimeExceptionService;
 
 import java.util.Map;
 import java.util.Scanner;
@@ -20,25 +20,26 @@ public class ArgsParser {
     ExHandler stdHandle;
     int len;
 
-    private ArrayList<String> validFlags = new ArrayList<>(
+    private ArrayList<String> whatWentWrong;
+    private Map<String, ArrayList<String>> processedOptions;
+
+    private ArrayList<String> validOptions = new ArrayList<>(
             List.of(
                     "-add", "-a",
-                    "-list", "-l",
-                    "-listall", "-la",
+                    "-clear", "-cl",
+                    "-clean", "-cn",
                     "--due",
+                    "-list", "-ls",
+                    "-listall", "-la",
+                    "-mark", "-m",
+                    "-markall", "-ma",
                     "-remap", "-rp",
                     "-remove", "-rm",
-                    "-done", "-m",
-                    "-clear", "-cr",
-                    "-doneall", "-ma",
                     "-update", "-u",
                     "--about",
                     "--help",
                     "--usage",
                     "--examples"));
-
-    private ArrayList<String> whatWentWrong;
-    private Map<String, ArrayList<String>> processedFlags;
 
     // Color codes
     private final String RESET = "\u001B[0m";
@@ -52,28 +53,28 @@ public class ArgsParser {
         this.len = this.args.length;
 
         this.whatWentWrong = new ArrayList<>();
-        this.processedFlags = new LinkedHashMap<>();
+        this.processedOptions = new LinkedHashMap<>();
 
     }
 
     public void init() {
         if (this.len <= 0) {
             this.noter.getPartialhelp();
-            this.stdHandle.panic("No flags found; skipping database connection, use --help for more help");
+            this.stdHandle.panic("No Options found; skipping database connection, use --help for more help");
             return;
         }
 
         Scanner userIn = new Scanner(System.in);
 
-        this.generateFlags(userIn);
-        this.executeFlags(userIn);
+        this.generateOptions(userIn);
+        this.executeOptions(userIn);
 
         userIn.close();
 
         if (this.whatWentWrong.size() > 0) {
 
             System.out.printf("\n%sGiven Command: %s %s\n", GREEN, String.join(" ", this.args), RESET);
-            System.out.printf("%sWhat went wrong%s\n\n", RED, RESET);
+            System.out.printf("%sWhat went wrong:%s\n\n", RED, RESET);
 
             for (String errorMsg : this.whatWentWrong) {
                 System.out.printf(errorMsg + "\n\n");
@@ -81,23 +82,17 @@ public class ArgsParser {
         }
     }
 
-    private ArrayList<String> getCommandValues(int index) {
+    private ArrayList<String> getOptionValues(int index) {
         ArrayList<String> values = new ArrayList<>();
 
         while (index < this.len) {
-            String flag = this.args[index];
+            String option = this.args[index];
 
-            if (flag.startsWith("-")) {
+            if (option.startsWith("-")) {
                 break;
             }
 
-            if (flag.startsWith("--") && flag.equals("--due")) {
-                values.add(flag);
-                index++;
-                continue;
-            }
-
-            values.add(flag);
+            values.add(option);
 
             index++;
         }
@@ -105,34 +100,34 @@ public class ArgsParser {
         return values;
     }
 
-    private void generateFlags(Scanner userIn) {
+    private void generateOptions(Scanner userIn) {
         int index = 0;
         while (index < this.len) {
             try {
 
-                String flag = this.args[index]; // Gett the current flag
+                String option = this.args[index]; // Gett the current option
 
-                // Don't skip if we're on a command, skip if we're not
-                if (!(flag.startsWith("-") || flag.startsWith("--"))) {
+                // Don't skip if we're on a OPTION, skip if we're not
+                if (!(option.startsWith("-") || option.startsWith("--"))) {
                     index++;
                     continue;
 
                 }
 
-                // Only valid flag or command is allowed to parr through.
-                if (!(this.validFlags.contains(flag))) {
+                // Only valid option or OPTION is allowed to pass through.
+                if (!(this.validOptions.contains(option))) {
                     index++;
-                    throw new RunTimeExpService(ErrorType.INVALID_COMMAND, flag);
+                    throw new RunTimeExceptionService(ErrorType.INVALID_OPTION, option);
                 }
 
-                ArrayList<String> values = this.getCommandValues(index + 1);
-                this.processedFlags.put(flag, values);
-                // this.executeFlags(flag, values);
+                ArrayList<String> values = this.getOptionValues(index + 1);
+                this.processedOptions.put(option, values);
+                // this.executeOptions(option, values);
 
                 index += values.size() + 1;
 
-            } catch (RunTimeExpService e) {
-                System.out.println(e.getMessage());
+            } catch (RunTimeExceptionService e) {
+                System.out.printf("\n%s%s%s\n", RED, e.getMessage(), RESET);
                 this.whatWentWrong.add(e.getMessage());
 
                 // if (!this.getUserConfirmation(userIn, e.getMessage())) {
@@ -143,7 +138,7 @@ public class ArgsParser {
             }
         }
 
-        System.out.println(processedFlags);
+        System.out.println(processedOptions);
     }
 
     private boolean getUserConfirmation(Scanner userIn, String errMsg) {
@@ -166,34 +161,33 @@ public class ArgsParser {
 
     private void handleNewTask(ArrayList<String> values, String option) {
         if (values.size() <= 0) {
-            throw new RunTimeExpService(ErrorType.NULL_VALUES_FOR_COMMAND, option);
+            throw new RunTimeExceptionService(ErrorType.NULL_VALUE_FOR_OPTION, option);
 
         }
 
-        if (values.size() < 2 || values.get(0).isBlank()) {
-            throw new RunTimeExpService(ErrorType.MISSING_VALUES, option);
+        if (values.size() < 2) {
+            throw new RunTimeExceptionService(ErrorType.MISSING_VALUES, option);
+        }
+
+        if (values.get(0).isBlank()) {
+            throw new RunTimeExceptionService(ErrorType.MISSING_REQUIRED_VALUE, "\"Task Name\"", option);
         }
 
         String tName = values.get(0);
         String tDesc = values.get(1);
         String dueDate = "None";
 
-        if (this.processedFlags.containsKey("--due")) {
-            dueDate = this.processedFlags.get("--due").get(0);
+        if (this.processedOptions.containsKey("--due")) {
+            dueDate = this.processedOptions.get("--due").get(0);
         }
 
         this.noter.addTask(tName, tDesc, dueDate);
 
     }
 
-    private boolean isValidSize(int val, int size) {
-        return val <= size;
-
-    }
-
-    private void handleUpdate(ArrayList<String> values, String command) {
-        if (values.size() <= 0 || !(this.isValidSize(3, values.size()))) {
-            throw new RunTimeExpService(ErrorType.MISSING_VALUES, command);
+    private void handleUpdate(ArrayList<String> values, String option) {
+        if (values.size() <= 0 || values.size() < 3) {
+            throw new RunTimeExceptionService(ErrorType.MISSING_VALUES, option);
         }
 
         int id = 0;
@@ -201,7 +195,7 @@ public class ArgsParser {
             id = Integer.parseInt(values.get(0));
 
         } catch (NumberFormatException e) {
-            throw new RunTimeExpService(ErrorType.INVALID_ID, values.get(0), command);
+            throw new RunTimeExceptionService(ErrorType.INVALID_ID, values.get(0), option);
 
         } catch (Exception e) {
             stdHandle.flowError(e.getMessage());
@@ -211,7 +205,8 @@ public class ArgsParser {
         String tName = values.get(1);
         String tDesc = values.get(2);
 
-        if (this.isValidSize(4, values.size())) {
+        // -u id name desc dueDate[3]
+        if (values.size() > 3) {
             due = values.get(3);
         }
 
@@ -221,7 +216,7 @@ public class ArgsParser {
 
     private void markAsDone(ArrayList<String> values, String option) {
         if (values.size() <= 0) {
-            throw new RunTimeExpService(ErrorType.NULL_VALUES_FOR_COMMAND, option);
+            throw new RunTimeExceptionService(ErrorType.NULL_VALUE_FOR_OPTION, option);
         }
 
         for (String index : values) {
@@ -230,7 +225,7 @@ public class ArgsParser {
                 this.noter.updateStatus(id);
 
             } catch (NumberFormatException e) {
-                throw new RunTimeExpService(ErrorType.INVALID_ID, values.get(0), option);
+                throw new RunTimeExceptionService(ErrorType.INVALID_ID, values.get(0), option);
 
             } catch (Exception e) {
                 this.stdHandle.flowError(e.getMessage());
@@ -239,13 +234,11 @@ public class ArgsParser {
 
         }
 
-        this.noter.listAllTasks(true);
-
     }
 
     private void handleRemove(ArrayList<String> values, String option) {
         if (values.size() <= 0) {
-            throw new RunTimeExpService(ErrorType.NULL_VALUES_FOR_COMMAND, option);
+            throw new RunTimeExceptionService(ErrorType.NULL_VALUE_FOR_OPTION, option);
 
         }
         for (String index : values) {
@@ -254,7 +247,7 @@ public class ArgsParser {
                 this.noter.removeTask(id);
 
             } catch (NumberFormatException e) {
-                throw new RunTimeExpService(ErrorType.INVALID_ID, values.get(0), option);
+                throw new RunTimeExceptionService(ErrorType.INVALID_ID, values.get(0), option);
 
             } catch (Exception e) {
                 this.stdHandle.flowError(e.getMessage());
@@ -262,50 +255,76 @@ public class ArgsParser {
             }
         }
 
-        this.noter.listAll();
+        this.noter.listTasks(0, "Pending Tasks");
 
     }
 
-    private void executeFlags(Scanner userIn) {
-        String flag;
+    public void handleListTaks(ArrayList<String> values) {
+        if (values.size() <= 0) {
+            this.noter.listTasks(0, "Pending Tasks");
+            return;
+        }
+        int status = 0;
+        try {
+            status = Integer.parseInt(values.get(0));
+        } catch (NumberFormatException e) {
+            throw new RunTimeExceptionService(ErrorType.STATUS_NOT_VALID, values.get(0));
+
+        }
+
+        if (status == 0 || status == 1) {
+            this.noter.listTasks(status, status == 0 ? "Pending Tasks" : "Completed Tasks");
+            return;
+        }
+
+        throw new RunTimeExceptionService(ErrorType.STATUS_NOT_VALID, status);
+
+    }
+
+    private void executeOptions(Scanner userIn) {
+        String option;
         ArrayList<String> values;
 
-        for (Map.Entry<String, ArrayList<String>> entry : this.processedFlags.entrySet()) {
-            flag = entry.getKey();
+        for (Map.Entry<String, ArrayList<String>> entry : this.processedOptions.entrySet()) {
+            option = entry.getKey();
             values = entry.getValue();
 
             try {
-                switch (flag) {
+                switch (option) {
                     case "-add", "-a":
-                        this.handleNewTask(values, flag);
+                        this.handleNewTask(values, option);
                         break;
 
                     case "-remove", "-rm":
-                        this.handleRemove(values, flag);
+                        this.handleRemove(values, option);
                         break;
 
-                    case "-done", "-m":
-                        this.markAsDone(values, flag);
+                    case "-mark", "-m":
+                        this.markAsDone(values, option);
                         break;
 
-                    case "-clear", "-cr":
+                    case "-clear", "-cl":
                         this.noter.clearTaskPool();
                         break;
 
-                    case "-doneall", "-ma":
+                    case "-clean", "-cn":
+                        this.noter.cleanTaskPool();
+                        break;
+
+                    case "-markall", "-ma":
                         this.noter.updateEveryTaskStatus(0, 1);
                         break;
 
-                    case "-list", "-l":
-                        this.noter.listAllTasks(false);
+                    case "-list", "-ls":
+                        this.handleListTaks(values);
                         break;
 
                     case "-listall", "-la":
-                        this.noter.listAll();
+                        this.noter.listTasks(-1, "Tasks");
                         break;
 
                     case "-update", "-u":
-                        this.handleUpdate(values, flag);
+                        this.handleUpdate(values, option);
                         break;
 
                     case "--help":
@@ -326,8 +345,7 @@ public class ArgsParser {
 
                 }
 
-            } catch (RunTimeExpService e) {
-                // System.out.println("\n" + e.getMessage());
+            } catch (RunTimeExceptionService e) {
                 this.whatWentWrong.add(e.getMessage());
 
                 if (!this.getUserConfirmation(userIn, e.getMessage())) {

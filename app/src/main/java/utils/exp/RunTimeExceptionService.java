@@ -1,9 +1,9 @@
 package utils.exp;
 
-public class RunTimeExpService extends RuntimeException {
+public class RunTimeExceptionService extends RuntimeException {
     public ErrorType errorType;
 
-    public RunTimeExpService(ErrorType errorType, Object... args) {
+    public RunTimeExceptionService(ErrorType errorType, Object... args) {
 
         String errorMsg = errorType.getMessage().length() > 0
                 ? String.format(errorType.getMessage(), args)

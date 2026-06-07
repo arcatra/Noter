@@ -3,19 +3,20 @@ HELP
 SYNOPSIS:
     -add,       -a      : Add a new task to the TaskPool, DBTaskPool. By the status of every new task is pending(0), the status can only be update\
                         after the task is been added.
-    -list,      -l      : Prints the pending(0) tasks from TaskPool to stdout.
-    -listall,   -la     : Prints entire TaskPool including completed(1)(archived), pending(0) tasks to stdout.
+    -list,      -ls     : Lists the (pending, completed, both) = (0, 1, -1) tasks to stdout, default being 0.
+    -listall,   -la     : Lists entire TaskPool, both(-1) completed, and pending tasks to stdout.
     --due               : Add a due-date while adding a task, defaults to "None" if omitted.
-    -remove,    -rm      : Remove a task from the TaskPool, and applies the updated TaskPool to the DBTaskPool.
-    -clear,     -cr     : Clear the TaskPool, this will erase everything in TaskPool, and DBTaskPool.
+    -remove,    -rm     : Remove a task from the TaskPool, and applies the updated TaskPool to the DBTaskPool.
+    -clear,     -cl     : Clear the TaskPool, this will erase everything in TaskPool, and DBTaskPool.
+    -clean,     -cn     : Cleans the TaskPool, this will erase every completed task in TaskPool, and DBTaskPool and it won't touch the pending tasks.
     -update,    -u      : Update a task - NAME or DESCRIPTION or DUE, with ID.
-    -done,      -m      : Mark a task status as "Completed", and archive the task(This won't remove the task from the TaskPool), and updates the \
+    -mark,      -m      : Mark a task status as "Completed", and archive the task(This won't remove the task from the TaskPool), and updates the \
                         DBTaskPool
-    -doneall,   -ma     : Mark all of the tasks status as "Completed", and updates the DB. There would be no pending tasks in TaskPool after this,\
-                        Unless you add one. And just like -done, this won't delete tasks from TaskPool.
+    -markall,   -ma     : Mark all of the tasks status as "Completed", and updates the DB. There would be no pending tasks in TaskPool after this,\
+                        Unless you add one. And just like -mark, this won't delete tasks from TaskPool.
 
     --about             : More info about Noter.
-    --help              : Know more about valid flags, options, usage, and examples.
+    --help              : Know more about valid options, flags, usage, and examples.
     --usage             : Get only the usage list.
     --examples          : Get only the examples list.
 

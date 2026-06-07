@@ -1,11 +1,13 @@
 USAGE:
     -add "<Name>" "<Description>" [--due "date/day/today/tomorrow"(Optional)] | -a ...
-    -list | -l
+    -list | -ls <status code: int>[Default is 0, allowed = (0, 1, -1)]
     -listall | -la
-    -remove <task ID: int> | -rm <task ID>
+    -remove <task ID: int>.... | -rm <task ID>
+    -clear | -cl 
+    -clean | -cn 
     -update <task ID: int> "<new name( . to skip)>" "<new description( . to skip)>" "<due-date(Optional)>" # See example below | -u ...
-    -done <task ID: int> | -m <task ID>
-    -doneall | -ma
+    -mark <task ID: int>..... | -m <task ID>.....
+    -markall | -ma
     -help/--help
     -about/--about
 

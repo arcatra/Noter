@@ -25,11 +25,6 @@ public class Task {
 
     }
 
-    public void updateTaskID(int newID) {
-        this.tId = newID;
-
-    }
-
     public String getTaskName() {
         return this.tName;
 

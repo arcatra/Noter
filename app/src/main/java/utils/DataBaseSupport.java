@@ -23,8 +23,6 @@ public class DataBaseSupport {
         this.helper = new Helpers();
         this.checkDB();
         this.init();
-        // this.displayTotalRows();
-
     }
 
     private void checkDB() {
