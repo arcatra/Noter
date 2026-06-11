@@ -106,23 +106,25 @@ public class Noter {
             return;
 
         }
-
-        if (this.taskPool.containsKey(id)) {
-            due = due.equals(".") ? this.taskPool.get(id).getDue() : due;
-            nName = nName.length() <= 1 ? this.taskPool.get(id).getTaskName() : nName;
-            nDesc = nDesc.length() <= 1 ? this.taskPool.get(id).getTaskDesc() : nDesc;
-
-            Task newTask = new Task(id, nName, nDesc, due);
-
-            this.taskPool.put(id, newTask);
-            db.update(newTask);
-
-            stdHandle.message(String.format("Done!, updated the given task: %d\n", id));
-            this.listTasks(0, "Pending Tasks");
-
-        } else {
+        // Update only if the id exists.
+        if (!this.taskPool.containsKey(id)) {
             stdHandle.message("No task found with given ID");
+            return;
+
         }
+
+        // Update the name, desc, and due date
+        due = due.equals(".") ? this.taskPool.get(id).getDue() : due;
+        nName = nName.length() <= 1 ? this.taskPool.get(id).getTaskName() : nName;
+        nDesc = nDesc.length() <= 1 ? this.taskPool.get(id).getTaskDesc() : nDesc;
+
+        Task exTask = this.taskPool.get(id);
+
+        exTask.updateproperties(nName, nDesc, due);
+        db.update(exTask);
+
+        stdHandle.message(String.format("Done!, updated the given task: %d\n", id));
+        this.listTasks(0, "Pending Tasks");
 
     }
 
@@ -141,6 +143,7 @@ public class Noter {
 
     public void listTasks(int status, String legend) {
         int archived = 0;
+
         if (this.isTaskPoolEmpty()) {
             System.out.println("No tasks found\n");
             return;
@@ -150,23 +153,12 @@ public class Noter {
         for (Task task : this.taskPool.values()) {
             if (task.getStatus() == status || status == -1) {
                 System.out.printf(
-                        "%sID: %s%d\t%sName: %s%s\t%sDescription: %s%s\t%sDue: %s%s\t%sStatus: %s%s\n\n",
-                        RED,
-                        RESET,
-                        task.getTaskId(),
-                        GREEN,
-                        RESET,
-                        task.getTaskName(),
-                        GREEN,
-                        RESET,
-                        task.getTaskDesc(),
-                        GREEN,
-                        RESET,
-                        task.getDue(),
-                        GREEN,
-                        RESET,
-                        task.getStatus() == 0 ? "Pending" : "Completed");
-
+                        "%sID:%s %d \t%sName:%s %s \t%sDescription:%s %s \t%sDue:%s %s \t%sStatus:%s %s\n\n",
+                        RED, RESET, task.getTaskId(),
+                        GREEN, RESET, task.getTaskName(),
+                        RED, RESET, task.getTaskDesc(),
+                        GREEN, RESET, task.getDue(),
+                        GREEN, RESET, task.getStatus() == 0 ? "Pending" : "Completed");
             }
 
             archived += task.getStatus() == 1 ? 1 : 0;

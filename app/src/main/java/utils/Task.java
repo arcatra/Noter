@@ -20,6 +20,13 @@ public class Task {
         this.status = 0; // 0 - pending, 1 - complete
     }
 
+    public void updateproperties(String newName, String newDesc, String newDue) {
+        this.tName = newName;
+        this.tDesc = newDesc;
+        this.due = newDue;
+
+    }
+
     public int getTaskId() {
         return this.tId;
 

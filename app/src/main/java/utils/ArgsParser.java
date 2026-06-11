@@ -33,7 +33,6 @@ public class ArgsParser {
                     "-listall", "-la",
                     "-mark", "-m",
                     "-markall", "-ma",
-                    "-remap", "-rp",
                     "-remove", "-rm",
                     "-update", "-u",
                     "--about",
