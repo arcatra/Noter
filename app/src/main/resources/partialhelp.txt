@@ -1,22 +1,23 @@
 HELP
 
 SYNOPSIS:
-    -add,       -a      : Add a new task to the TaskPool, DBTaskPool. By the status of every new task is pending(0), the status can only be update\
-                        after the task is been added.
-    -list,      -ls     : Lists the (pending, completed, both) = (0, 1, -1) tasks to stdout, default being 0.
-    -listall,   -la     : Lists entire TaskPool, both(-1) completed, and pending tasks to stdout.
-    --due               : Add a due-date while adding a task, defaults to "None" if omitted.
-    -remove,    -rm     : Remove a task from the TaskPool, and applies the updated TaskPool to the DBTaskPool.
-    -clear,     -cl     : Clear the TaskPool, this will erase everything in TaskPool, and DBTaskPool.
-    -clean,     -cn     : Cleans the TaskPool, this will erase every completed task in TaskPool, and DBTaskPool and it won't touch the pending tasks.
-    -update,    -u      : Update a task - NAME or DESCRIPTION or DUE, with ID.
-    -mark,      -m      : Mark a task status as "Completed", and archive the task(This won't remove the task from the TaskPool), and updates the \
-                        DBTaskPool
-    -markall,   -ma     : Mark all of the tasks status as "Completed", and updates the DB. There would be no pending tasks in TaskPool after this,\
-                        Unless you add one. And just like -mark, this won't delete tasks from TaskPool.
+    -add,           -a      : Adds a new task to the TaskPool. By the status of every new task is pending(0), the status can only be updated\
+                            after the task is been added.
+    -list,          -ls     : Lists the (pending, Archived, [Both]) = (0, 1, [-1]) tasks to stdout, default being 0.
+    -listall,       -la     : Lists entire TaskPool, both(-1) Archived, and pending tasks to stdout.
+    --due                   : Adds a due-date while adding a task, defaults to "None" if omitted.
+    -remove,        -rm     : Removes a task from the TaskPool, and applies the update to the TaskPool.
+    -clear,         -cl     : Clears the TaskPool, this will erase everything in TaskPool.
+    -clean,         -cn     : Cleans the TaskPool, this will erase every Archived task in the TaskPool (This won't touch any pending tasks).
+    -update,        -u      : Updates a task - NAME or DESCRIPTION or DUE, with ID.
+    -link,          -ln     : Links two exixting tasks, the input order of task IDs for two tasks doesn't matter.
+    -archive,       -arc    : Mark a task status as "Archived", and archive the task(This won't remove the task from the TaskPool).
+    -archiveall,    -arca   : Mark all of the tasks status as "Archived", and updates the DB. There would be no pending tasks in TaskPool after this Unless you add one. And just like -archive, this won't delete tasks from TaskPool.
 
-    --about             : More info about Noter.
-    --help              : Know more about valid options, flags, usage, and examples.
-    --usage             : Get only the usage list.
-    --examples          : Get only the examples list.
+    --about                 : More info about Noter.
+    --help                  : Know more about valid options, flags, usage, and examples.
+    --usage                 : Get only the usage list.
+    --examples              : Get only the examples list.
 
+Note:
+    Every single operation that can bring changes to the TaskPool, would effect the DBTaskPool(The local DB of TaskPool).

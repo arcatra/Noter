@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import utils.*;
+import utils.argsParser.*;
 // -----------------
 
 public class Noter {
@@ -14,6 +15,8 @@ public class Noter {
     public String resourcesPath;
     public Map<Integer, Task> taskPool = new HashMap<>();
     public int currId;
+
+    private int archivedCount = 0;
 
     Helpers helper;
     ArgsParser argsParser;
@@ -51,6 +54,10 @@ public class Noter {
         for (Task task : dbTasks) {
             this.taskPool.put(task.getTaskId(), task);
             this.currId = task.getTaskId();
+
+            if (task.getStatus() == 1) {
+                this.archivedCount++;
+            }
         }
 
         this.currId++;
@@ -94,7 +101,7 @@ public class Noter {
 
         db.insert(newTask);
         stdHandle.message("Successfully added a task to database\n");
-        this.listTasks(0, "Pending Tasks");
+        this.listTasks(0, "-Pending Tasks");
 
         currId++;
     }
@@ -124,25 +131,33 @@ public class Noter {
         db.update(exTask);
 
         stdHandle.message(String.format("Done!, updated the given task: %d\n", id));
-        this.listTasks(0, "Pending Tasks");
+        this.listTasks(0, "-Pending Tasks");
 
     }
 
-    public void updateEveryTaskStatus(int pastStatus, int newStatus) {
-        if ((pastStatus >= 0 && pastStatus <= 1) && (newStatus >= 0 && newStatus <= 1)) {
-            db.updateAllStatus(pastStatus, newStatus);
+    public void archiveEveryTask(int soStatus, int desStatus) {
+        if ((soStatus >= 0 && soStatus <= 1) && (desStatus >= 0 && desStatus <= 1)) {
+            for (Task task : this.taskPool.values()) {
+                if (task.getStatus() == 1) {
+                    this.archivedCount--;
+                }
+            }
+
+            db.updateAllStatus(soStatus, desStatus);
+
             return;
 
         }
 
         stdHandle.flowError(
-                String.format("One of the task status is not valid, past: %d, new: %d, only 0 or 1 acceptable",
-                        pastStatus, newStatus));
+                String.format(
+                        "Source or Destination task(s) status is not valid, Source: %d, Destination: %d, only 0 or 1 acceptable",
+                        soStatus, desStatus));
 
     }
 
     public void listTasks(int status, String legend) {
-        int archived = 0;
+        // int archived = 0;
 
         if (this.isTaskPoolEmpty()) {
             System.out.println("No tasks found\n");
@@ -153,26 +168,41 @@ public class Noter {
         for (Task task : this.taskPool.values()) {
             if (task.getStatus() == status || status == -1) {
                 System.out.printf(
-                        "%sID:%s %d \t%sName:%s %s \t%sDescription:%s %s \t%sDue:%s %s \t%sStatus:%s %s\n\n",
+                        "%sID:%s %d \t%sNAME:%s %s \t%sDESCRIPTION:%s %s \t%sDUE:%s %s \t%sSTATUS:%s %s\n\n",
                         RED, RESET, task.getTaskId(),
                         GREEN, RESET, task.getTaskName(),
-                        RED, RESET, task.getTaskDesc(),
+                        GREEN, RESET, task.getTaskDesc(),
                         GREEN, RESET, task.getDue(),
-                        GREEN, RESET, task.getStatus() == 0 ? "Pending" : "Completed");
+                        GREEN, RESET, task.getStatus() == 0 ? "Pending" : "Archived");
             }
 
-            archived += task.getStatus() == 1 ? 1 : 0;
+            // archived += task.getStatus() == 1 ? 1 : 0;
         }
 
-        System.out.printf("\n%d Archived task%s\n", archived, archived > 1 ? "s" : "");
+        System.out.printf("\n%d Archived task%s\n", this.archivedCount, this.archivedCount > 1 ? "s" : "");
+    }
+
+    public void linkTasks(int sourceId, int destId) {
+        if (!(this.taskPool.containsKey(sourceId) && this.taskPool.containsKey(destId))) {
+            this.stdHandle.panic("Cannot find the given source/destination IDs, please check and try again");
+            return;
+        }
+
+        System.out.println("Done linked two tasks");
+
     }
 
     public void removeTask(int id) {
         if (this.taskPool.containsKey(id) && !this.isTaskPoolEmpty()) {
+            int currTaskStatus = this.taskPool.get(id).getStatus();
             this.taskPool.remove(id);
             db.remove(id);
 
-            this.stdHandle.message("Done!, removed task: " + id);
+            if (currTaskStatus == 1) {
+                this.archivedCount--;
+            }
+
+            this.stdHandle.message("Done!, removed the task with ID: " + id);
             return;
         }
 
@@ -180,17 +210,23 @@ public class Noter {
 
     }
 
-    public void updateStatus(int id) {
-
-        if (this.taskPool.containsKey(id) && !this.isTaskPoolEmpty()) {
-            this.taskPool.get(id).updateStatus(1);
-            db.update(id, 1);
-
-            this.stdHandle.message("Done! Updated the status to Completed(1)\n");
+    public void archiveTask(int id) {
+        if (!this.taskPool.containsKey(id) && this.isTaskPoolEmpty()) {
+            System.out.printf("No task found with id: %d or TaskPool is empty\n", id);
             return;
         }
 
-        System.out.printf("No task found with id: %d or TaskPool is empty\n", id);
+        if (this.taskPool.get(id).getStatus() == 1) {
+            System.out.println("Task already marked as \"Archived\", skipping");
+            return;
+        }
+
+        this.taskPool.get(id).updateStatus(1);
+        db.update(id, 1);
+
+        this.stdHandle.message("Done! Updated the status to Archived(1)\n");
+
+        this.archivedCount++;
     }
 
     public void cleanTaskPool() {
@@ -199,13 +235,15 @@ public class Noter {
             return;
         }
 
-        Task[] removable = new Task[this.taskPool.size()];
+        int[] removable = new int[this.taskPool.size()];
         int index = 0;
 
-        for (Task task : this.taskPool.values()) {
-            if (task.getStatus() == 1) {
-                removable[index] = task;
+        for (int taskId : this.taskPool.keySet()) {
+            if (this.taskPool.get(taskId).getStatus() == 1) {
+                removable[index] = taskId;
                 index++;
+
+                this.archivedCount--;
             }
         }
 
@@ -214,10 +252,10 @@ public class Noter {
             return;
         }
 
-        for (Task task : removable) {
-            if (task != null) {
-                this.taskPool.remove(task.getTaskId());
-                this.db.remove(task.getTaskId());
+        for (int taskId : removable) {
+            if (this.taskPool.get(taskId) != null) {
+                this.taskPool.remove(taskId);
+                this.db.remove(taskId);
             }
         }
 
@@ -233,6 +271,8 @@ public class Noter {
 
         db.clear();
         this.taskPool.clear();
+
+        this.archivedCount = 0;
 
         stdHandle.message("Done!, Cleared all the tasks\n");
     }

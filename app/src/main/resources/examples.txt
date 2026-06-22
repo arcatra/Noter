@@ -17,9 +17,9 @@ EX 3.2:
     Notes: The due-date is completely optional, you can skip this if you want, and also you can either have taskName, taskDescription or even both.
 
 EX 4: 
-    -m 3 2 7 1 ....<Enter>
+    -arc 3 2 7 1 ....<Enter>
 
-    Notes: You can provide more than one valid task ids for -remove[-rm] and -mark[-m], and these options scan input from left to right.
+    Notes: You can provide more than one valid task ids for -remove[-rm] and -archive[-arc], and these options scan input from left to right.
 
 EX 5:
     -ls 0 (Equivalent to: -ls) | -ls 1 | -ls -1
@@ -28,14 +28,14 @@ EX 5:
         A status code(0, 1, -1) after the -ls represents the status of task(s) that need to be listed.
         in which:
             0 : Pending, this is default, and just -ls without a status code would give the same result as -ls 0.
-            1 : Lists the completed tasks.
-            -1: Lists all of the tasks, both pending and completed.
+            1 : Lists the Archived tasks.
+            -1: Lists all of the tasks, both pending and Archived.
 EX 5: 
-    -a "New task" "Description" --due "today" -ls 1 -m 2 -la -rm 2 3 7 -cn
+    -a "New task" "Description" --due "today" -ls 1 -arc 2 -la -rm 2 3 7 -cn
 
 Notes:
-    1. You can have multiple options in the same line, like so: -add "task:description" -listall -mark 2 4 9  ...
+    1. You can have multiple options in the same line, like so: -add "task:description" -listall -archive 2 4 9  ...
     2. Observe a "single space" between every valid option, every input after a option will be treated as values.
-    3. "-remove", and "-mark" options can handle multiple values at the same time.
-    4. Every valid option will be executed in a left to right order, in EX 5: 1. -a[-add], 2. -ls[-list], 3. -m[-mark], 4. -la[-listall], 5. -rm[-remove]
+    3. "-remove", and "-archive" options can handle multiple values at the same time.
+    4. Every valid option will be executed in a left to right order, in EX 5: 1. -a[-add], 2. -ls[-list], 3. -arc[-archive], 4. -la[-listall], 5. -rm[-remove]
 
