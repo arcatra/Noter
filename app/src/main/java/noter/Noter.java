@@ -1,4 +1,3 @@
-
 package noter;
 
 // Imports ----------
@@ -7,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import utils.*;
-import utils.argsParser.*;
+import utils.argsParser.OptionsParser;
 // -----------------
 
 public class Noter {
@@ -19,7 +18,7 @@ public class Noter {
     private int archivedCount = 0;
 
     Helpers helper;
-    ArgsParser argsParser;
+    OptionsParser opParser;
     ExHandler stdHandle;
     DataBaseSupport db;
 
@@ -31,11 +30,11 @@ public class Noter {
         this.resourcesPath = "app/src/main/resources/";
         this.helper = new Helpers();
         this.stdHandle = new ExHandler();
-        this.argsParser = new ArgsParser(args, this);
+        this.opParser = new OptionsParser(args, this);
 
         this.db = new DataBaseSupport();
         this.init();
-        this.argsParser.init();
+        this.opParser.init();
 
     }
 

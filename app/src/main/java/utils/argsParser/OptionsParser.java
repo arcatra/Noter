@@ -1,29 +1,27 @@
 package utils.argsParser;
 
-// Imports ------------
-import noter.Noter;
-import utils.exp.ErrorType;
-import utils.exp.RunTimeExceptionService;
-
+// imports ------------------
 import java.util.Map;
-import java.util.Scanner;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
-import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Scanner;
+import java.util.InputMismatchException;
 
+import noter.Noter;
+import utils.exp.*;
 import utils.ExHandler;
-// -------------------
 
-public class ArgsParser {
+// --------------------------
 
-    String[] args;
-    Noter noter;
-    ExHandler stdHandle;
-    int len;
+public class OptionsParser {
 
-    private ArrayList<String> whatWentWrong;
     private Map<String, ArrayList<String>> processedOptions;
+    private Noter noter;
+    private OptionsHandler opHandler;
+    private String[] args;
+    private int len;
+    private ExHandler stdHandle;
 
     private ArrayList<String> validOptions = new ArrayList<>(
             List.of(
@@ -43,20 +41,19 @@ public class ArgsParser {
                     "--usage",
                     "--examples"));
 
+    private ArrayList<String> whatWentWrong;
     // Color codes
     private final String RESET = "\u001B[0m";
     private final String REDTEXT = "\u001B[31m";
     private final String GREENTEXT = "\u001B[32m";
 
-    public ArgsParser(String[] args, Noter noter) {
-        this.args = args;
-        this.noter = noter;
-        this.stdHandle = new ExHandler();
-        this.len = this.args.length;
-
-        this.whatWentWrong = new ArrayList<>();
+    public OptionsParser(String[] args, Noter noterObj) {
         this.processedOptions = new LinkedHashMap<>();
-
+        this.noter = noterObj;
+        this.opHandler = new OptionsHandler(this.noter, this);
+        this.stdHandle = new ExHandler();
+        this.args = args;
+        this.len = args.length;
     }
 
     public void init() {
@@ -81,6 +78,20 @@ public class ArgsParser {
                 System.out.printf(errorMsg + "\n\n");
             }
         }
+    }
+
+    public boolean isOptionExixts(String option) {
+        return this.processedOptions.containsKey(option);
+
+    }
+
+    public ArrayList<String> getOptionValues(String option) {
+        if (this.isOptionExixts(option)) {
+            return this.processedOptions.get(option);
+
+        }
+
+        return null;
     }
 
     private ArrayList<String> getOptionValues(int index) {
@@ -155,155 +166,6 @@ public class ArgsParser {
         return true;
     }
 
-    private void handleNewTask(ArrayList<String> values, String option) {
-        if (values.size() <= 0) {
-            throw new RunTimeExceptionService(ErrorType.NULL_VALUE_FOR_OPTION, option);
-
-        }
-
-        if (values.size() < 2) {
-            throw new RunTimeExceptionService(ErrorType.MISSING_VALUES, option);
-        }
-
-        if (values.get(0).isBlank()) {
-            throw new RunTimeExceptionService(ErrorType.MISSING_REQUIRED_VALUE, "\"Task Name\"", option);
-        }
-
-        String tName = values.get(0);
-        String tDesc = values.get(1);
-        String dueDate = "None";
-
-        if (this.processedOptions.containsKey("--due")) {
-            dueDate = this.processedOptions.get("--due").get(0);
-        }
-
-        this.noter.addTask(tName, tDesc, dueDate);
-
-    }
-
-    private void handleUpdate(ArrayList<String> values, String option) {
-        if (values.size() <= 0 || values.size() < 3) {
-            throw new RunTimeExceptionService(ErrorType.MISSING_VALUES, option);
-        }
-
-        int id = 0;
-        try {
-            id = Integer.parseInt(values.get(0));
-
-        } catch (NumberFormatException e) {
-            throw new RunTimeExceptionService(ErrorType.INVALID_ID, values.get(0), option);
-
-        } catch (Exception e) {
-            stdHandle.flowError(e.getMessage());
-        }
-
-        String due = ".";
-        String tName = values.get(1);
-        String tDesc = values.get(2);
-
-        // -u id name desc dueDate[3]
-        if (values.size() > 3) {
-            due = values.get(3);
-        }
-
-        this.noter.updateTask(id, tName, tDesc, due);
-
-    }
-
-    private void handleArchive(ArrayList<String> values, String option) {
-        if (values.size() <= 0) {
-            throw new RunTimeExceptionService(ErrorType.NULL_VALUE_FOR_OPTION, option);
-        }
-
-        for (String index : values) {
-            try {
-                int id = Integer.parseInt(index);
-                this.noter.archiveTask(id);
-
-            } catch (NumberFormatException e) {
-                throw new RunTimeExceptionService(ErrorType.INVALID_ID, values.get(0), option);
-
-            } catch (Exception e) {
-                this.stdHandle.flowError(e.getMessage());
-
-            }
-
-        }
-
-    }
-
-    private void handleRemove(ArrayList<String> values, String option) {
-        if (values.size() <= 0) {
-            throw new RunTimeExceptionService(ErrorType.NULL_VALUE_FOR_OPTION, option);
-
-        }
-        for (String index : values) {
-            try {
-                int id = Integer.parseInt(index);
-                this.noter.removeTask(id);
-
-            } catch (NumberFormatException e) {
-                throw new RunTimeExceptionService(ErrorType.INVALID_ID, values.get(0), option);
-
-            } catch (Exception e) {
-                this.stdHandle.flowError(e.getMessage());
-
-            }
-        }
-
-        this.noter.listTasks(0, "-Pending Tasks");
-
-    }
-
-    public void handleTaskLink(ArrayList<String> values, String option) {
-        if (values.size() <= 0) {
-            throw new RunTimeExceptionService(ErrorType.NULL_VALUE_FOR_OPTION, option);
-
-        }
-
-        if (values.size() < 2) {
-            throw new RunTimeExceptionService(ErrorType.INVALID_VALUES, option, "-link[-ln] <Source> <Destination>");
-
-        }
-
-        int source;
-        int destination;
-
-        try {
-            source = Integer.parseInt(values.get(0));
-            destination = Integer.parseInt(values.get(1));
-
-        } catch (Exception e) {
-            throw new RunTimeExceptionService(ErrorType.INVALID_VALUES, option, "-link[-ln] <Source> <Destination>");
-        }
-
-        this.noter.linkTasks(source, destination);
-
-    }
-
-    public void handleListTaks(ArrayList<String> values) {
-        if (values.size() <= 0) {
-            this.noter.listTasks(0, "-Pending Tasks");
-            return;
-        }
-
-        int status = 0;
-        try {
-            status = Integer.parseInt(values.get(0));
-        } catch (NumberFormatException e) {
-            throw new RunTimeExceptionService(ErrorType.STATUS_NOT_VALID, values.get(0));
-
-        }
-
-        if (status >= 0 && status <= 1) {
-            this.noter.listTasks(status, status == 0 ? "-Pending Tasks" : "-Archived Tasks");
-            return;
-        }
-
-        throw new RunTimeExceptionService(ErrorType.STATUS_NOT_VALID, status);
-
-    }
-
     private void executeOptions(Scanner userIn) {
         String option;
         ArrayList<String> values;
@@ -315,15 +177,15 @@ public class ArgsParser {
             try {
                 switch (option) {
                     case "-add", "-a":
-                        this.handleNewTask(values, option);
+                        this.opHandler.handleNewTask(values, option);
                         break;
 
                     case "-remove", "-rm":
-                        this.handleRemove(values, option);
+                        this.opHandler.handleRemove(values, option);
                         break;
 
                     case "-archive", "-arc":
-                        this.handleArchive(values, option);
+                        this.opHandler.handleArchive(values, option);
                         break;
 
                     case "-clear", "-cl":
@@ -339,7 +201,7 @@ public class ArgsParser {
                         break;
 
                     case "-list", "-ls":
-                        this.handleListTaks(values);
+                        this.opHandler.handleListTaks(values);
                         break;
 
                     case "-listall", "-la":
@@ -347,11 +209,11 @@ public class ArgsParser {
                         break;
 
                     case "-update", "-u":
-                        this.handleUpdate(values, option);
+                        this.opHandler.handleUpdate(values, option);
                         break;
 
                     case "-link", "-ln":
-                        this.handleTaskLink(values, option);
+                        this.opHandler.handleTaskLink(values, option);
                         break;
 
                     case "--help":
@@ -376,7 +238,7 @@ public class ArgsParser {
                 this.whatWentWrong.add(e.getMessage());
 
                 if (!this.getUserConfirmation(userIn, e.getMessage())) {
-                    stdHandle.message("\nExecution Ended\n");
+                    System.out.println("\nExecution Ended\n");
                     return;
                 }
 
@@ -384,5 +246,4 @@ public class ArgsParser {
         }
 
     }
-
 }
