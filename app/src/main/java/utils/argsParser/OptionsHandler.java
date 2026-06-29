@@ -10,16 +10,13 @@ import java.util.ArrayList;
 
 public class OptionsHandler {
 
-    String[] args;
     Noter noter;
     ExHandler stdHandle;
-    int len;
     OptionsParser opParser;
 
     public OptionsHandler(Noter noter, OptionsParser opParser) {
         this.noter = noter;
         this.stdHandle = new ExHandler();
-        this.len = this.args.length;
         this.opParser = opParser;
     }
 
@@ -149,7 +146,7 @@ public class OptionsHandler {
 
     }
 
-    public void handleListTaks(ArrayList<String> values) {
+    public void handleListTaks(ArrayList<String> values) throws RunTimeExceptionService {
         if (values.size() <= 0) {
             this.noter.listTasks(0, "-Pending Tasks");
             return;

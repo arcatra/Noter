@@ -7,10 +7,6 @@ public class ExHandler {
 
     }
 
-    public void message(String msg) {
-        System.out.printf("Message: %s\n", msg);
-    }
-
     public void panic(String err) {
         System.out.printf("Fatal: %s\n", err);
     }

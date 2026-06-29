@@ -24,21 +24,20 @@ public class Helpers {
     }
 
     public void readFile(String filePath) {
-        if (this.isPathExists(filePath)) {
-            try (BufferedReader bfr = new BufferedReader(new FileReader(filePath))) {
+        if (!this.isPathExists(filePath)) {
+            System.out.printf("Error: path %s doesn't exists\n", filePath);
+            return;
+        }
 
-                String task;
-                while ((task = bfr.readLine()) != null) {
-                    System.out.println(task);
-                }
+        try (BufferedReader bfr = new BufferedReader(new FileReader(filePath))) {
 
-            } catch (Exception e) {
-                stdHandle.panic("Error occured while processing this path: " + filePath);
-
+            String task;
+            while ((task = bfr.readLine()) != null) {
+                System.out.println(task);
             }
 
-        } else {
-            System.out.printf("Error: path %s doesn't exists\n", filePath);
+        } catch (Exception e) {
+            stdHandle.panic("Error occured while processing this path: " + filePath);
 
         }
 

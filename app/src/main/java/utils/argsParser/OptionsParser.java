@@ -16,7 +16,6 @@ import utils.ExHandler;
 
 public class OptionsParser {
 
-    private Map<String, ArrayList<String>> processedOptions;
     private Noter noter;
     private OptionsHandler opHandler;
     private String[] args;
@@ -41,14 +40,15 @@ public class OptionsParser {
                     "--usage",
                     "--examples"));
 
-    private ArrayList<String> whatWentWrong;
+    private Map<String, ArrayList<String>> processedOptions = new LinkedHashMap<>();
+    private ArrayList<String> whatWentWrong = new ArrayList<>();
+
     // Color codes
     private final String RESET = "\u001B[0m";
     private final String REDTEXT = "\u001B[31m";
     private final String GREENTEXT = "\u001B[32m";
 
     public OptionsParser(String[] args, Noter noterObj) {
-        this.processedOptions = new LinkedHashMap<>();
         this.noter = noterObj;
         this.opHandler = new OptionsHandler(this.noter, this);
         this.stdHandle = new ExHandler();

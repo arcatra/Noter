@@ -13,6 +13,7 @@ data/
 
 clean
 make/
+noter-cli
 
 lpp/.project
 app/.classpath

@@ -1,6 +1,6 @@
 EXAMPLES:
 EX 1: 
-    -a "A new task" "separate the description from task name" --due "Tomorrow"<Enter>
+    -a "A new task" "separate the description from task name" --due(Optional) "Tomorrow"<Enter>
 
     IMP:1. the --due option is completely optional, but is recommended for adding a due date to your tasks.
         2. Description for the task is expected every time, and would throw an "FlowError" if not provided.
@@ -9,7 +9,7 @@ EX 2:
     -rm 4 5 6 ....<Enter> 
 
 EX 3.1: 
-    -update 4 . . "25-05-2026"<Enter>
+    -update 4 . . "25-05-2026"(Optional)<Enter>
 
 EX 3.2: 
     -u 4 "New task" .
@@ -22,15 +22,15 @@ EX 4:
     Notes: You can provide more than one valid task ids for -remove[-rm] and -archive[-arc], and these options scan input from left to right.
 
 EX 5:
-    -ls 0 (Equivalent to: -ls) | -ls 1 | -ls -1
+    -ls 0 => Equivalent to: -ls(Default = 0) | [Staus-codes allowed = (0, 1)](Optional)
 
     Notes: 
-        A status code(0, 1, -1) after the -ls represents the status of task(s) that need to be listed.
+        An optional status code(0, 1, [-1]) after the -ls represents the status of task(s) that need to be listed.
         in which:
             0 : Pending, this is default, and just -ls without a status code would give the same result as -ls 0.
             1 : Lists the Archived tasks.
             -1: Lists all of the tasks, both pending and Archived.
-EX 5: 
+EX 6: 
     -a "New task" "Description" --due "today" -ls 1 -arc 2 -la -rm 2 3 7 -cn
 
 Notes:

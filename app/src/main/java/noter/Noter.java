@@ -99,7 +99,7 @@ public class Noter {
         this.taskPool.put(currId, newTask);
 
         db.insert(newTask);
-        stdHandle.message("Successfully added a task to database\n");
+        System.out.println("Successfully added a task to database\n");
         this.listTasks(0, "-Pending Tasks");
 
         currId++;
@@ -114,7 +114,7 @@ public class Noter {
         }
         // Update only if the id exists.
         if (!this.taskPool.containsKey(id)) {
-            stdHandle.message("No task found with given ID");
+            System.out.println("No task found with given ID");
             return;
 
         }
@@ -129,7 +129,7 @@ public class Noter {
         exTask.updateproperties(nName, nDesc, due);
         db.update(exTask);
 
-        stdHandle.message(String.format("Done!, updated the given task: %d\n", id));
+        System.out.println(String.format("Done!, updated the given task: %d\n", id));
         this.listTasks(0, "-Pending Tasks");
 
     }
@@ -201,7 +201,7 @@ public class Noter {
                 this.archivedCount--;
             }
 
-            this.stdHandle.message("Done!, removed the task with ID: " + id);
+            System.out.println("Done!, removed the task with ID: " + id);
             return;
         }
 
@@ -223,7 +223,7 @@ public class Noter {
         this.taskPool.get(id).updateStatus(1);
         db.update(id, 1);
 
-        this.stdHandle.message("Done! Updated the status to Archived(1)\n");
+        System.out.println("Done! Updated the status to Archived(1)\n");
 
         this.archivedCount++;
     }
@@ -273,7 +273,7 @@ public class Noter {
 
         this.archivedCount = 0;
 
-        stdHandle.message("Done!, Cleared all the tasks\n");
+        System.out.println("Done!, Cleared all the tasks\n");
     }
 
 }

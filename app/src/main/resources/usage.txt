@@ -1,14 +1,15 @@
 USAGE:
-    -add "<Name>" "<Description>" [--due "date/day/today/tomorrow"(Optional)] [-a]...
-    -list [-ls] <status code: int> Default is 0, allowed = (0, 1)]
-    -listall [-la] (Eqivalent to -ls -1)
-    -remove <task ID: int>.... [-rm] <task ID>
-    -clear [-cl] 
-    -clean [-cn] 
-    -clear [-cl]
-    -update <task ID: int> "<new name( . to skip)>" "<new description( . to skip)>" "<due-date(Optional)>" # See example below [-u]...
-    -archive <task ID: int>..... [-arc ]<task ID>.....
-    -archiveall [-arca]
-    -help/--help
-    -about/--about
+    -add            | -a "<Name>" "<Description>" [--due "date/day/today/tomorrow"(Optional)]
+    -list           | -ls <status code(Optional): int> [Default is 0, allowed = (0, 1)]
+    -listall        | -la (Eqivalent to -ls -1)
+    -remove         | -rm <task ID: int>....
+    -clear          | -cl 
+    -clean          | -cn 
+    -update         | -u <task ID: int> "<new name( . to skip)>" "<new description( . to skip)>" "<due-date(Optional)>" # For more info see example for -u
+    -archive        | -arc <task ID: int>.....
+    -archiveall     | -arca
+    -help           | --help
+    --usage
+    --examples
+    -about          | --about
 

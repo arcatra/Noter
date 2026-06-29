@@ -16,11 +16,9 @@ public class DataBaseSupport {
     private static final String URL = "jdbc:sqlite:" + DBPATH;
 
     ExHandler stdHandle;
-    Helpers helper;
 
     public DataBaseSupport() {
         this.stdHandle = new ExHandler();
-        this.helper = new Helpers();
         this.checkDB();
         this.init();
     }
@@ -36,13 +34,6 @@ public class DataBaseSupport {
     private void init() {
         String query = "CREATE TABLE IF NOT EXISTS taskpool ( " +
                 "id INTEGER PRIMARY KEY, name TEXT NOT NULL, description TEXT, duedate TEXT, status INTEGER)";
-
-        if (this.helper.isPathExists(DBPATH)) {
-            System.out.println(String.format("Found DBPath", DBPATH));
-            System.out.println("Trying to establish DataBase connection");
-            System.out.println("Success, Connected to DataBase!");
-
-        }
 
         try (Connection dbConn = DriverManager.getConnection(URL);
                 PreparedStatement excQuery = dbConn.prepareStatement(query)) {
