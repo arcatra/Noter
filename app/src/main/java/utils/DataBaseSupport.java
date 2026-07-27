@@ -11,13 +11,15 @@ import java.util.List;
 // ---------------------
 
 public class DataBaseSupport {
-    private static final String DBDIR = "data/";
+    private static final String USERHOME = System.getProperty("user.home");
+    private static final String DBDIR = USERHOME + "/.local/share/noter/data/";
     private static final String DBPATH = DBDIR + "taskpool.db";
     private static final String URL = "jdbc:sqlite:" + DBPATH;
 
     ExHandler stdHandle;
 
     public DataBaseSupport() {
+        // System.out.println(DBPATH);
         this.stdHandle = new ExHandler();
         this.checkDB();
         this.init();
